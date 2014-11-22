@@ -1,4 +1,4 @@
-#include "MQTT.h"
+#include "MQTT/MQTT.h"
 
 void callback(char* topic, byte* payload, unsigned int length);
 MQTT client("server_name", 1883, callback);
