@@ -2,13 +2,13 @@
 
 void callback(char* topic, byte* payload, unsigned int length);
 
-# If want to use IP address,
-# byte server[] = { XXX,XXX,XXX,XXX };
-# MQTT client(server, 1883, callback);
-# 
-# domain name,
-# MQTT client("www.sample.com", 1883, callback);
-#
+/**
+ * if want to use IP address,
+ * byte server[] = { XXX,XXX,XXX,XXX };
+ * MQTT client(server, 1883, callback);
+ * want to use domain name,
+ * MQTT client("www.sample.com", 1883, callback);
+ **/
 MQTT client("server_name", 1883, callback);
 
 // recieve message
