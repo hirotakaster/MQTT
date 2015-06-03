@@ -4,7 +4,8 @@ MQTT library for Spark core
 Version 0.1: initial version
 
 Copyright (c) 2014 Hirotaka Niisato
-Permission is hereby granted, free of charge, to any person obtaining
+Per
+mission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
 "Software"), to deal in the Software without restriction, including
 without limitation the rights to use, copy, modify, merge, publish,
@@ -94,7 +95,7 @@ private:
    void (*callback)(char*,uint8_t*,unsigned int);
    uint16_t readPacket(uint8_t*);
    uint8_t readByte();
-   boolean write(uint8_t header, uint8_t* buf, uint16_t length);
+   bool write(uint8_t header, uint8_t* buf, uint16_t length);
    uint16_t writeString(char* string, uint8_t* buf, uint16_t pos);
    String domain;
    uint8_t *ip;
@@ -106,19 +107,19 @@ public:
    MQTT(char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int));
    MQTT(uint8_t *, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int));
 
-   boolean connect(char *);
-   boolean connect(char *, char *, char *);
-   boolean connect(char *, char *, uint8_t, uint8_t, char *);
-   boolean connect(char *, char *, char *, char *, uint8_t, uint8_t, char*);
+   bool connect(char *);
+   bool connect(char *, char *, char *);
+   bool connect(char *, char *, uint8_t, uint8_t, char *);
+   bool connect(char *, char *, char *, char *, uint8_t, uint8_t, char*);
    void disconnect();
-   boolean publish(char *, char *);
-   boolean publish(char *, uint8_t *, unsigned int);
-   boolean publish(char *, uint8_t *, unsigned int, boolean);
-   boolean subscribe(char *);
-   boolean subscribe(char *, uint8_t qos);
-   boolean unsubscribe(char *);
-   boolean loop();
-   boolean isConnected();
+   bool publish(char *, char *);
+   bool publish(char *, uint8_t *, unsigned int);
+   bool publish(char *, uint8_t *, unsigned int, bool);
+   bool subscribe(char *);
+   bool subscribe(char *, uint8_t qos);
+   bool unsubscribe(char *);
+   bool loop();
+   bool isConnected();
 };
 
 
