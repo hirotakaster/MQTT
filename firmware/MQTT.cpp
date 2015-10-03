@@ -228,7 +228,7 @@ bool MQTT::publish(char* topic, uint8_t* payload, unsigned int plength) {
     return publish(topic, payload, plength, false);
 }
 
-bool MQTT::publish(char* topic, uint8_t* payload, unsigned int plength, bool retained) {
+bool MQTT::publish(char* topic, uint8_t* payload, unsigned int plength, bool retain) {
     if (isConnected()) {
         // Leave room in the buffer for header and variable length field
         uint16_t length = 5;
@@ -238,7 +238,7 @@ bool MQTT::publish(char* topic, uint8_t* payload, unsigned int plength, bool ret
             buffer[length++] = payload[i];
         }
         uint8_t header = MQTTPUBLISH;
-        if (retained) {
+        if (retain) {
             header |= 1;
         }
         return write(header,buffer,length-5);
