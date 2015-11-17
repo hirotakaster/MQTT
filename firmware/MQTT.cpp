@@ -20,20 +20,20 @@ MQTT::MQTT(uint8_t *ip, uint16_t port, void (*callback)(char*,uint8_t*,unsigned 
 }
 
 
-bool MQTT::connect(char *id) {
+bool MQTT::connect(const char *id) {
    return connect(id,NULL,NULL,0,0,0,0);
 }
 
-bool MQTT::connect(char *id, char *user, char *pass) {
+bool MQTT::connect(const char *id, const char *user, const char *pass) {
    return connect(id,user,pass,0,0,0,0);
 }
 
-bool MQTT::connect(char *id, char* willTopic, uint8_t willQos, uint8_t willRetain, char* willMessage)
+bool MQTT::connect(const char *id, const char* willTopic, uint8_t willQos, uint8_t willRetain, const char* willMessage)
 {
    return connect(id,NULL,NULL,willTopic,willQos,willRetain,willMessage);
 }
 
-bool MQTT::connect(char *id, char *user, char *pass, char* willTopic, uint8_t willQos, uint8_t willRetain, char* willMessage) {
+bool MQTT::connect(const char *id, const char *user, const char *pass, const char* willTopic, uint8_t willQos, uint8_t willRetain, const char* willMessage) {
     if (!isConnected()) {
         int result = 0;
         if (ip == NULL)
@@ -70,10 +70,10 @@ bool MQTT::connect(char *id, char *user, char *pass, char* willTopic, uint8_t wi
 
             buffer[length++] = ((MQTT_KEEPALIVE) >> 8);
             buffer[length++] = ((MQTT_KEEPALIVE) & 0xFF);
-            length = writeString(id,buffer,length);
+            length = writeString(id, buffer, length);
             if (willTopic) {
-                length = writeString(willTopic,buffer,length);
-                length = writeString(willMessage,buffer,length);
+                length = writeString(willTopic, buffer, length);
+                length = writeString(willMessage, buffer, length);
             }
 
             if(user != NULL) {
@@ -83,7 +83,7 @@ bool MQTT::connect(char *id, char *user, char *pass, char* willTopic, uint8_t wi
                 }
             }
          
-            write(MQTTCONNECT,buffer,length-5);
+            write(MQTTCONNECT, buffer, length-5);
             lastInActivity = lastOutActivity = millis();
          
             while (!_client.available()) {
@@ -220,15 +220,15 @@ bool MQTT::loop() {
     return false;
 }
 
-bool MQTT::publish(char* topic, char* payload) {
+bool MQTT::publish(const char* topic, const char* payload) {
     return publish(topic,(uint8_t*)payload,strlen(payload),false);
 }
 
-bool MQTT::publish(char* topic, uint8_t* payload, unsigned int plength) {
+bool MQTT::publish(const char* topic, const uint8_t* payload, unsigned int plength) {
     return publish(topic, payload, plength, false);
 }
 
-bool MQTT::publish(char* topic, uint8_t* payload, unsigned int plength, bool kept) {
+bool MQTT::publish(const char* topic, const uint8_t* payload, unsigned int plength, bool kept) {
     if (isConnected()) {
         // Leave room in the buffer for header and variable length field
         uint16_t length = 5;
@@ -273,11 +273,11 @@ bool MQTT::write(uint8_t header, uint8_t* buf, uint16_t length) {
     return (rc == 1+llen+length);
 }
 
-bool MQTT::subscribe(char* topic) {
+bool MQTT::subscribe(const char* topic) {
     return subscribe(topic, 0);
 }
 
-bool MQTT::subscribe(char* topic, uint8_t qos) {
+bool MQTT::subscribe(const char* topic, uint8_t qos) {
     if (qos < 0 || qos > 1)
         return false;
 
@@ -297,7 +297,7 @@ bool MQTT::subscribe(char* topic, uint8_t qos) {
     return false;
 }
 
-bool MQTT::unsubscribe(char* topic) {
+bool MQTT::unsubscribe(const char* topic) {
     if (isConnected()) {
         uint16_t length = 5;
         nextMsgId++;
@@ -320,8 +320,8 @@ void MQTT::disconnect() {
     lastInActivity = lastOutActivity = millis();
 }
 
-uint16_t MQTT::writeString(char* string, uint8_t* buf, uint16_t pos) {
-    char* idp = string;
+uint16_t MQTT::writeString(const char* string, uint8_t* buf, uint16_t pos) {
+    const char* idp = string;
     uint16_t i = 0;
     pos += 2;
     while (*idp) {
@@ -339,4 +339,5 @@ bool MQTT::isConnected() {
     if (!rc) _client.stop();
     return rc;
 }
+
 

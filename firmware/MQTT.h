@@ -94,7 +94,7 @@ private:
    uint16_t readPacket(uint8_t*);
    uint8_t readByte();
    bool write(uint8_t header, uint8_t* buf, uint16_t length);
-   uint16_t writeString(char* string, uint8_t* buf, uint16_t pos);
+   uint16_t writeString(const char* string, uint8_t* buf, uint16_t pos);
    String domain;
    uint8_t *ip;
    uint16_t port;
@@ -105,17 +105,17 @@ public:
    MQTT(char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int));
    MQTT(uint8_t *, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int));
 
-   bool connect(char *);
-   bool connect(char *, char *, char *);
-   bool connect(char *, char *, uint8_t, uint8_t, char *);
-   bool connect(char *, char *, char *, char *, uint8_t, uint8_t, char*);
+   bool connect(const char *);
+   bool connect(const char *, const char *, const char *);
+   bool connect(const char *, const char *, uint8_t, uint8_t, const char *);
+   bool connect(const char *, const char *, const char *, const char *, uint8_t, uint8_t, const char*);
    void disconnect();
-   bool publish(char *, char *);
-   bool publish(char *, uint8_t *, unsigned int);
-   bool publish(char *, uint8_t *, unsigned int, bool);
-   bool subscribe(char *);
-   bool subscribe(char *, uint8_t qos);
-   bool unsubscribe(char *);
+   bool publish(const char *, const char *);
+   bool publish(const char *, const uint8_t *, unsigned int);
+   bool publish(const char *, const uint8_t *, unsigned int, bool);
+   bool subscribe(const char *);
+   bool subscribe(const char *, uint8_t qos);
+   bool unsubscribe(const char *);
    bool loop();
    bool isConnected();
 };
