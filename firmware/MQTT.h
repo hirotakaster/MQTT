@@ -78,11 +78,15 @@ sample code bearing this copyright.
 #define MQTTDISCONNECT  14 << 4 // Client is Disconnecting
 #define MQTTReserved    15 << 4 // Reserved
 
-#define MQTTQOS0        (0 << 1)
-#define MQTTQOS1        (1 << 1)
-#define MQTTQOS2        (2 << 1)
-
 class MQTT {
+/** types */
+public:
+typedef enum{
+   QOS0 = 0,
+   QOS1 = 1,
+   QOS2 = 2,
+}EMQTT_QOS;
+
 private:
    TCPClient _client;
    uint8_t buffer[MQTT_MAX_PACKET_SIZE];
@@ -107,14 +111,14 @@ public:
 
    bool connect(const char *);
    bool connect(const char *, const char *, const char *);
-   bool connect(const char *, const char *, uint8_t, uint8_t, const char *);
-   bool connect(const char *, const char *, const char *, const char *, uint8_t, uint8_t, const char*);
+   bool connect(const char *, const char *, EMQTT_QOS, uint8_t, const char *);
+   bool connect(const char *, const char *, const char *, const char *, EMQTT_QOS, uint8_t, const char*);
    void disconnect();
    bool publish(const char *, const char *);
    bool publish(const char *, const uint8_t *, unsigned int);
    bool publish(const char *, const uint8_t *, unsigned int, bool);
    bool subscribe(const char *);
-   bool subscribe(const char *, uint8_t qos);
+   bool subscribe(const char *, EMQTT_QOS);
    bool unsubscribe(const char *);
    bool loop();
    bool isConnected();
