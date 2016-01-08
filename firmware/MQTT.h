@@ -82,46 +82,53 @@ class MQTT {
 /** types */
 public:
 typedef enum{
-   QOS0 = 0,
-   QOS1 = 1,
-   QOS2 = 2,
+    QOS0 = 0,
+    QOS1 = 1,
+    QOS2 = 2,
 }EMQTT_QOS;
 
 private:
-   TCPClient _client;
-   uint8_t buffer[MQTT_MAX_PACKET_SIZE];
-   uint16_t nextMsgId;
-   unsigned long lastOutActivity;
-   unsigned long lastInActivity;
-   bool pingOutstanding;
-   void (*callback)(char*,uint8_t*,unsigned int);
-   uint16_t readPacket(uint8_t*);
-   uint8_t readByte();
-   bool write(uint8_t header, uint8_t* buf, uint16_t length);
-   uint16_t writeString(const char* string, uint8_t* buf, uint16_t pos);
-   String domain;
-   uint8_t *ip;
-   uint16_t port;
+    TCPClient _client;
+    uint8_t buffer[MQTT_MAX_PACKET_SIZE];
+    uint16_t nextMsgId;
+    unsigned long lastOutActivity;
+    unsigned long lastInActivity;
+    bool pingOutstanding;
+    void (*callback)(char*,uint8_t*,unsigned int);
+    void (*qoscallback)(unsigned int);
+    uint16_t readPacket(uint8_t*);
+    uint8_t readByte();
+    bool write(uint8_t header, uint8_t* buf, uint16_t length);
+    uint16_t writeString(const char* string, uint8_t* buf, uint16_t pos);
+    String domain;
+    uint8_t *ip;
+    uint16_t port;
 
 public:
-   MQTT();
+    MQTT();
+    
+    MQTT(char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int));
+    MQTT(uint8_t *, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int));
+    
+    bool connect(const char *);
+    bool connect(const char *, const char *, const char *);
+    bool connect(const char *, const char *, EMQTT_QOS, uint8_t, const char *);
+    bool connect(const char *, const char *, const char *, const char *, EMQTT_QOS, uint8_t, const char*);
+    void disconnect();
+    
+    bool publish(const char *, const char *);
+    bool publish(const char *, const char *, EMQTT_QOS, uint16_t *messageid);
+    bool publish(const char *, const uint8_t *, unsigned int);
+    bool publish(const char *, const uint8_t *, unsigned int, EMQTT_QOS, uint16_t *messageid);
+    bool publish(const char *, const uint8_t *, unsigned int, bool);
+    bool publish(const char *, const uint8_t *, unsigned int, bool, EMQTT_QOS, uint16_t *messageid);
+    void addQosCallback(void (*qoscallback)(unsigned int));
 
-   MQTT(char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int));
-   MQTT(uint8_t *, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int));
-
-   bool connect(const char *);
-   bool connect(const char *, const char *, const char *);
-   bool connect(const char *, const char *, EMQTT_QOS, uint8_t, const char *);
-   bool connect(const char *, const char *, const char *, const char *, EMQTT_QOS, uint8_t, const char*);
-   void disconnect();
-   bool publish(const char *, const char *);
-   bool publish(const char *, const uint8_t *, unsigned int);
-   bool publish(const char *, const uint8_t *, unsigned int, bool);
-   bool subscribe(const char *);
-   bool subscribe(const char *, EMQTT_QOS);
-   bool unsubscribe(const char *);
-   bool loop();
-   bool isConnected();
+    bool subscribe(const char *);
+    bool subscribe(const char *, EMQTT_QOS);
+    bool unsubscribe(const char *);
+    bool loop();
+    bool isConnected();
 };
 
 
