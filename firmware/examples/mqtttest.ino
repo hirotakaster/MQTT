@@ -44,6 +44,5 @@ void setup() {
 }
 
 void loop() {
-    if (client.isConnected())
-        client.loop();
+    client.loop();
 }
