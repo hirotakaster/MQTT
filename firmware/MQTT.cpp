@@ -223,6 +223,8 @@ bool MQTT::loop() {
                             this->qoscallback(msgId);
                         }
                     }
+                } else if (type == MQTTPUBCOMP) {
+                    // TODO:if something...
                 } else if (type == MQTTSUBACK) {
                     // if something...
                 } else if (type == MQTTPINGREQ) {
@@ -268,7 +270,7 @@ bool MQTT::publish(const char* topic, const uint8_t* payload, unsigned int pleng
         length = writeString(topic, buffer, length);
 
         if (qos == QOS2 || qos == QOS1) {
-            *messageid = random(0xFFFF);
+            *messageid = nextMsgId++;
             buffer[length++] = (*messageid >> 8);
             buffer[length++] = (*messageid & 0xFF);
         }
@@ -290,6 +292,18 @@ bool MQTT::publish(const char* topic, const uint8_t* payload, unsigned int pleng
             header |= MQTTQOS0_HEADER_MASK;
 
         return write(header, buffer, length-5);
+    }
+    return false;
+}
+
+bool MQTT::publishRelease(uint16_t messageid) {
+    if (isConnected()) {
+        uint16_t length = 0;
+        buffer[length++] = MQTTPUBREL | MQTTQOS1_HEADER_MASK;
+        buffer[length++] = 2;
+        buffer[length++] = (messageid >> 8);
+        buffer[length++] = (messageid & 0xFF);
+        return _client.write(buffer, length);
     }
     return false;
 }
@@ -316,7 +330,7 @@ bool MQTT::write(uint8_t header, uint8_t* buf, uint16_t length) {
     for (int i = 0; i < llen; i++) {
         buf[5-llen+i] = lenBuf[i];
     }
-    rc = _client.write(buf+(4-llen),length+1+llen);
+    rc = _client.write(buf+(4-llen), length+1+llen);
    
     lastOutActivity = millis();
     return (rc == 1+llen+length);

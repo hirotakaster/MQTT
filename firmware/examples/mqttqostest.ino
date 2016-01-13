@@ -9,7 +9,11 @@ void callback(char* topic, byte* payload, unsigned int length);
  * want to use domain name,
  * MQTT client("www.sample.com", 1883, callback);
  **/
-MQTT client("www.hirotakaster.com", 1883, callback);
+MQTT client("server_name", 1883, callback);
+
+// for QoS2 MQTTPUBREL message.
+// this messageid maybe have store list or array structure.
+uint16_t qos2messageid = 0;
 
 // recieve message
 void callback(char* topic, byte* payload, unsigned int length) {
@@ -34,6 +38,11 @@ void callback(char* topic, byte* payload, unsigned int length) {
 void qoscallback(unsigned int messageid) {
     Serial.print("Ack Message Id:");
     Serial.println(messageid);
+
+    if (messageid == qos2messageid) {
+        Serial.println("Release QoS2 Message");
+        client.publishRelease(qos2messageid);
+    }
 }
 
 void setup() {
@@ -56,6 +65,9 @@ void setup() {
 
         client.publish("/outTopic", "hello world QOS2", MQTT::QOS2, &messageid);
         Serial.println(messageid);
+
+        // save QoS2 message id.
+        qos2messageid = messageid;
 
         client.subscribe("/inTopic");
     }
