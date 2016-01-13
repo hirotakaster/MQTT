@@ -273,7 +273,7 @@ bool MQTT::publish(const char* topic, const uint8_t* payload, unsigned int pleng
             buffer[length++] = (*messageid & 0xFF);
         }
         
-        for (uint16_t i = 0; i < plength; i++) {
+        for (uint16_t i=0; i < plength && length < MQTT_MAX_PACKET_SIZE; i++) {
             buffer[length++] = payload[i];
         }
         
@@ -373,7 +373,7 @@ uint16_t MQTT::writeString(const char* string, uint8_t* buf, uint16_t pos) {
     const char* idp = string;
     uint16_t i = 0;
     pos += 2;
-    while (*idp) {
+    while (*idp && pos < MQTT_MAX_PACKET_SIZE) {
         buf[pos++] = *idp++;
         i++;
     }
