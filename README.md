@@ -1,7 +1,7 @@
 MQTT for Spark
 ============
 
-<a href="http://mqtt.org/" target=_blank>MQTT</a> library for Spark core version 0.3.0.
+<a href="http://mqtt.org/" target=_blank>MQTT</a> library for Spark core version 0.3.1.
 
 Example mqtttest.ino is dependent on:
 
