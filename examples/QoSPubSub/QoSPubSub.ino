@@ -15,7 +15,8 @@ void callback(char* topic, byte* payload, unsigned int length);
  * want to use domain name,
  * MQTT client("www.sample.com", 1883, callback);
  **/
-MQTT client("server_name", 1883, callback);
+EthernetClient ethclient;
+MQTT client("www.example.com", 1883, callback, ethclient);
 
 // for QoS2 MQTTPUBREL message.
 // this messageid maybe have store list or array structure.
