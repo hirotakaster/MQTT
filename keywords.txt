@@ -1,0 +1,26 @@
+#######################################
+# Syntax Coloring Map For PubSubClient
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+MQTTPubSubClient	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+connect 	KEYWORD2
+disconnect 	KEYWORD2
+publish 	KEYWORD2
+subscribe 	KEYWORD2
+unsubscribe 	KEYWORD2
+addQosCallback	KEYWORD2
+loop 	KEYWORD2
+isConnected	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
