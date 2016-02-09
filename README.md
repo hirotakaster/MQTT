@@ -9,8 +9,8 @@ Application can use QOS0,1,2 and retain flag when send a publish message.
 Download this source code branch zip file and extract to the Arduino libraries directory or checkout repository. Here is checkout on MacOS X.
 
     cd $HOME/Documents/Arduino/libraries/
-    git clone -b arduino https://github.com/hirotakaster/MQTT MQTT_PubSub_Client
-    # restart Arduino IDE, you can find MQTT_PubSub_Client examples.
+    git clone -b arduino https://github.com/hirotakaster/MQTT MQTTClient
+    # restart Arduino IDE, you can find MQTTCilent examples.
 
 ## Example
 This library use Arduino Ethernet Client, so application can use this library on generic Arduino hardware(YUN, Ethernet Shield, ESP8266...others). Some sample sketches included(examples/).
