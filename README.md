@@ -1,4 +1,4 @@
-# MQTT for Photon, Spark Core and Arduino compatible.
+# MQTT for Photon, Spark Core
 <a href="http://mqtt.org/" target=_blank>MQTT</a> publish/subscribe library for Photon, Spark Core version 0.3.4.
 
 ## Source Code
@@ -10,3 +10,6 @@ Application can use QOS0,1,2 and retain flag when send a publish message.
 Some sample sketches for Spark Core and Photon included(firmware/examples/).
  - mqtttest.ino	: simple pub/sub sample. 
  - mqttqostest.ino : QoS1, QoS2 publish and callback sample.
+
+## Arduino compatible
+This library is Arduino compatible. Arduino version is <a href="https://github.com/hirotakaster/MQTT_PubSubClient" target=_blank>here</a>. 
