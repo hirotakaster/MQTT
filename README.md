@@ -3,7 +3,6 @@
 
 ## Source Code
 This lightweight library source code are only 2 files. MQTT.cpp, MQTT.h.
-
 Application can use QOS0,1,2 and retain flag when send a publish message.
 
 ## Example
