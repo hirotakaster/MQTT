@@ -16,21 +16,37 @@ MQTT::MQTT() {
     this->ip = NULL;
 }
 
-MQTT::MQTT(char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int), Client& client) {
+MQTT::MQTT(char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int)
+#if defined(ARDUINO)
+        , Client& client
+#endif
+    ) {
     this->callback = callback;
     this->qoscallback = NULL;
     this->domain = domain;
     this->port = port;
     this->ip = NULL;
+#if defined(ARDUINO)
     this->_client = &client;
+#elif defined(SPARK)
+    this->_client = new TCPClient();
+#endif
 }
 
-MQTT::MQTT(uint8_t *ip, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int), Client& client) {
+MQTT::MQTT(uint8_t *ip, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int)
+#if defined(ARDUINO)
+        , Client& client
+#endif
+    ) {
     this->callback = callback;
     this->qoscallback = NULL;
     this->ip = ip;
     this->port = port;
+#if defined(ARDUINO)
     this->_client = &client;
+#elif defined(SPARK)
+    this->_client = new TCPClient();
+#endif
 }
 
 void MQTT::addQosCallback(void (*qoscallback)(unsigned int)) {
