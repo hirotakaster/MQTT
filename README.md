@@ -12,4 +12,4 @@ Some sample sketches for Spark Core and Photon included(firmware/examples/).
  - mqttqostest.ino : QoS1, QoS2 publish and callback sample.
 
 ## Arduino compatible
-This library is Arduino compatible. Arduino version is <a href="https://github.com/hirotakaster/MQTT_PubSubClient" target=_blank>here</a>. 
+This library is Arduino compatible. Arduino version is <a href="https://github.com/hirotakaster/MQTT/tree/arduino">here</a>. 
