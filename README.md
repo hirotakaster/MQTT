@@ -1,5 +1,5 @@
 # MQTT library for Arduino compatible with Spark Photon, Spark Core.
-<a href="http://mqtt.org/" target=_blank>MQTT</a> publish/subscribe library for Arduino version 0.3.4.
+<a href="http://mqtt.org/" target=_blank>MQTT</a> publish/subscribe library for Arduino version 0.3.5.
 
 ## Source Code
 This lightweight library source code are only 2 files. MQTT.cpp, MQTT.h.
