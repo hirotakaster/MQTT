@@ -1,5 +1,5 @@
 /*
-MQTT library for Spark core
+MQTT library for Particle Core, Photon, Arduino
 This software is released under the MIT License.
 
 Copyright (c) 2014 Hirotaka Niisato
@@ -51,9 +51,13 @@ sample code bearing this copyright.
 #ifndef MQTT_h
 #define MQTT_h
 
+#if defined(ARDUINO)
+#include "EthernetClient.h"
+#elif defined(SPARK)
 #include "spark_wiring_string.h"
 #include "spark_wiring_tcpclient.h"
 #include "spark_wiring_usbserial.h"
+#endif
 
 // MQTT_MAX_PACKET_SIZE : Maximum packet size
 #define MQTT_MAX_PACKET_SIZE 128
@@ -88,7 +92,11 @@ typedef enum{
 }EMQTT_QOS;
 
 private:
+#if defined(ARDUINO)
+    EthernetClient _client;
+#elif defined(SPARK)
     TCPClient _client;
+#endif
     uint8_t buffer[MQTT_MAX_PACKET_SIZE];
     uint16_t nextMsgId;
     unsigned long lastOutActivity;

@@ -1,5 +1,10 @@
 #include "MQTT.h"
+
+#if defined(ARDUINO)
+#include "Arduino.h"
+#elif defined(SPARK)
 #include "application.h"
+#endif
 
 #define LOGGING
 
