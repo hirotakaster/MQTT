@@ -15,7 +15,7 @@ void callback(char* topic, byte* payload, unsigned int length);
  * want to use domain name,
  * MQTT client("www.sample.com", 1883, callback);
  **/
-MQTT client("www.hirotakaster.com", 1883, callback);
+MQTT client("server_name", 1883, callback);
 
 // recieve message
 void callback(char* topic, byte* payload, unsigned int length) {
