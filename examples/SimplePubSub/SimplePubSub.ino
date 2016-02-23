@@ -1,7 +1,9 @@
+#if (PLATFORM_ID!=88)
 #include <Dhcp.h>
 #include <Dns.h>
 #include <Ethernet.h>
 #include <SPI.h>
+#endif
 #include <MQTT.h>
 
 byte mac[] = { 0x00, 0xAA, 0xBB, 0xCC, 0xDE, 0x02 };
@@ -15,8 +17,13 @@ void callback(char* topic, byte* payload, unsigned int length);
  * want to use domain name,
  * MQTT client("www.sample.com", 1883, callback);
  **/
+#if defined(SPARK) || (PLATFORM_ID==88)
+// Spark/RedBear Duo
+MQTT client("www.example.com", 1883, callback);
+#else
 EthernetClient ethclient;
 MQTT client("www.example.com", 1883, callback, ethclient);
+#endif
 
 // recieve message
 void callback(char* topic, byte* payload, unsigned int length) {
@@ -33,6 +40,8 @@ void callback(char* topic, byte* payload, unsigned int length) {
 void setup() {
   Serial.begin(9600);
 
+#if defined(SPARK) || (PLATFORM_ID==88)
+#else
   // Get IP address from DHCP Server
   Ethernet.begin(mac);
 
@@ -42,7 +51,8 @@ void setup() {
     Serial.print(".");
   }
   Serial.println();
-    
+#endif
+
   // connect to the server
   client.connect("sparkclient");
 

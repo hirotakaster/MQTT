@@ -17,7 +17,8 @@ MQTT::MQTT() {
 }
 
 MQTT::MQTT(char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int)
-#if defined(ARDUINO)
+#if defined(SPARK) || (PLATFORM_ID==88)
+#elif defined(ARDUINO)
         , Client& client
 #endif
     ) {
@@ -26,15 +27,16 @@ MQTT::MQTT(char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned
     this->domain = domain;
     this->port = port;
     this->ip = NULL;
-#if defined(ARDUINO)
-    this->_client = &client;
-#elif defined(SPARK)
+#if defined(SPARK) || (PLATFORM_ID==88)
     this->_client = new TCPClient();
+#elif defined(ARDUINO)
+    this->_client = &client;
 #endif
 }
 
 MQTT::MQTT(uint8_t *ip, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int)
-#if defined(ARDUINO)
+#if defined(SPARK) || (PLATFORM_ID==88)
+#elif defined(ARDUINO)
         , Client& client
 #endif
     ) {
@@ -42,10 +44,10 @@ MQTT::MQTT(uint8_t *ip, uint16_t port, void (*callback)(char*,uint8_t*,unsigned 
     this->qoscallback = NULL;
     this->ip = ip;
     this->port = port;
-#if defined(ARDUINO)
-    this->_client = &client;
-#elif defined(SPARK)
+#if defined(SPARK) || (PLATFORM_ID==88)
     this->_client = new TCPClient();
+#elif defined(ARDUINO)
+    this->_client = &client;
 #endif
 }
 
