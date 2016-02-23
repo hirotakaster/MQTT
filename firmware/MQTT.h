@@ -51,12 +51,12 @@ sample code bearing this copyright.
 #ifndef MQTT_h
 #define MQTT_h
 
-#if defined(ARDUINO)
-#include "Client.h"
-#elif defined(SPARK)
+#if defined(SPARK) || (PLATFORM_ID==88)
 #include "spark_wiring_string.h"
 #include "spark_wiring_tcpclient.h"
 #include "spark_wiring_usbserial.h"
+#elif defined(ARDUINO)
+#include "Client.h"
 #endif
 
 // MQTT_MAX_PACKET_SIZE : Maximum packet size
@@ -93,10 +93,10 @@ typedef enum{
 }EMQTT_QOS;
 
 private:
-#if defined(ARDUINO)
-    Client *_client;
-#elif defined(SPARK)
+#if defined(SPARK) || (PLATFORM_ID==88)
     TCPClient *_client;
+#elif defined(ARDUINO)
+    Client *_client;
 #endif
     uint8_t buffer[MQTT_MAX_PACKET_SIZE];
     uint16_t nextMsgId;
@@ -117,12 +117,14 @@ public:
     MQTT();
     
     MQTT(char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int)
-#if defined(ARDUINO)
+#if defined(SPARK) || (PLATFORM_ID==88)
+#elif defined(ARDUINO)
         , Client& client
 #endif
         );
     MQTT(uint8_t *, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int)
-#if defined(ARDUINO)
+#if defined(SPARK) || (PLATFORM_ID==88)
+#elif defined(ARDUINO)
         , Client& client
 #endif
         );
