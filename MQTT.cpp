@@ -12,6 +12,9 @@
 #define MQTTQOS1_HEADER_MASK        (1 << 1)
 #define MQTTQOS2_HEADER_MASK        (2 << 1)
 
+#define DUP_FLAG_OFF_MASK           (0<<3)
+#define DUP_FLAG_ON_MASK            (1<<3)
+
 MQTT::MQTT() {
     this->ip = NULL;
 }
@@ -22,15 +25,23 @@ MQTT::MQTT(char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned
         , Client& client
 #endif
     ) {
-    this->callback = callback;
-    this->qoscallback = NULL;
-    this->domain = domain;
-    this->port = port;
-    this->ip = NULL;
 #if defined(SPARK) || (PLATFORM_ID==88)
-    this->_client = new TCPClient();
+    this->initialize(domain, NULL, port, callback, MQTT_MAX_PACKET_SIZE);
 #elif defined(ARDUINO)
-    this->_client = &client;
+    this->initialize(domain, NULL, port, callback, MQTT_MAX_PACKET_SIZE, client);
+#endif
+}
+
+MQTT::MQTT(char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize
+#if defined(SPARK) || (PLATFORM_ID==88)
+#elif defined(ARDUINO)
+        , Client& client
+#endif
+    ) {
+#if defined(SPARK) || (PLATFORM_ID==88)
+    this->initialize(domain, NULL, port, callback, maxpacketsize);
+#elif defined(ARDUINO)
+    this->initialize(domain, NULL, port, callback, maxpacketsize, client);
 #endif
 }
 
@@ -40,16 +51,56 @@ MQTT::MQTT(uint8_t *ip, uint16_t port, void (*callback)(char*,uint8_t*,unsigned 
         , Client& client
 #endif
     ) {
+#if defined(SPARK) || (PLATFORM_ID==88)
+    this->initialize(NULL, ip, port, callback, MQTT_MAX_PACKET_SIZE);
+#elif defined(ARDUINO)
+    this->initialize(NULL, ip, port, callback, MQTT_MAX_PACKET_SIZE, client);
+#endif
+}
+
+MQTT::MQTT(uint8_t *ip, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize
+#if defined(SPARK) || (PLATFORM_ID==88)
+#elif defined(ARDUINO)
+        , Client& client
+#endif
+    ) {
+#if defined(SPARK) || (PLATFORM_ID==88)
+    this->initialize(NULL, ip, port, callback, maxpacketsize);
+#elif defined(ARDUINO)
+    this->initialize(NULL, ip, port, callback, maxpacketsize, client);
+#endif
+}
+
+MQTT::~MQTT() {
+    if (isConnected()) {
+        disconnect();
+        free(buffer);
+    }
+}
+
+void MQTT::initialize(char* domain, uint8_t *ip, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize
+#if defined(SPARK) || (PLATFORM_ID==88)
+#elif defined(ARDUINO)
+        , Client& client
+#endif
+) {
     this->callback = callback;
     this->qoscallback = NULL;
-    this->ip = ip;
+    if (ip != NULL)
+        this->ip = ip;
+    if (domain != NULL)
+        this->domain = domain;
     this->port = port;
+    
+    this->maxpacketsize = maxpacketsize;
+    buffer = new uint8_t[this->maxpacketsize];
 #if defined(SPARK) || (PLATFORM_ID==88)
     this->_client = new TCPClient();
 #elif defined(ARDUINO)
     this->_client = &client;
-#endif
+#endif    
 }
+
 
 void MQTT::addQosCallback(void (*qoscallback)(unsigned int)) {
     this->qoscallback = qoscallback;
@@ -178,13 +229,13 @@ uint16_t MQTT::readPacket(uint8_t* lengthLength) {
 
     for (uint16_t i = start;i<length;i++) {
         digit = readByte();
-        if (len < MQTT_MAX_PACKET_SIZE) {
+        if (len < this->maxpacketsize) {
             buffer[len] = digit;
         }
         len++;
     }
    
-    if (len > MQTT_MAX_PACKET_SIZE) {
+    if (len > this->maxpacketsize) {
         len = 0; // This will cause the packet to be ignored.
     }
 
@@ -270,12 +321,20 @@ bool MQTT::publish(const char* topic, const char* payload) {
     return publish(topic, (uint8_t*)payload, strlen(payload), false, QOS0, NULL);
 }
 
+bool MQTT::publish(const char * topic, const char* payload, EMQTT_QOS qos, bool dup, uint16_t *messageid) {
+    return publish(topic, (uint8_t*)payload, strlen(payload), false, qos, dup, messageid);
+}
+
 bool MQTT::publish(const char * topic, const char* payload, EMQTT_QOS qos, uint16_t *messageid) {
     return publish(topic, (uint8_t*)payload, strlen(payload), false, qos, messageid);
 }
 
 bool MQTT::publish(const char* topic, const uint8_t* payload, unsigned int plength) {
     return publish(topic, payload, plength, false, QOS0, NULL);
+}
+
+bool MQTT::publish(const char* topic, const uint8_t* payload, unsigned int plength, EMQTT_QOS qos, bool dup, uint16_t *messageid) {
+    return publish(topic, payload, plength, false, QOS0, dup, messageid);
 }
 
 bool MQTT::publish(const char* topic, const uint8_t* payload, unsigned int plength, EMQTT_QOS qos, uint16_t *messageid) {
@@ -287,6 +346,10 @@ bool MQTT::publish(const char* topic, const uint8_t* payload, unsigned int pleng
 }
 
 bool MQTT::publish(const char* topic, const uint8_t* payload, unsigned int plength, bool retain, EMQTT_QOS qos, uint16_t *messageid) {
+    return publish(topic, payload, plength, retain, QOS0, false, messageid);
+}
+
+bool MQTT::publish(const char* topic, const uint8_t* payload, unsigned int plength, bool retain, EMQTT_QOS qos, bool dup, uint16_t *messageid) {
     if (isConnected()) {
         // Leave room in the buffer for header and variable length field
         uint16_t length = 5;
@@ -300,13 +363,17 @@ bool MQTT::publish(const char* topic, const uint8_t* payload, unsigned int pleng
             buffer[length++] = (*messageid & 0xFF);
         }
         
-        for (uint16_t i=0; i < plength && length < MQTT_MAX_PACKET_SIZE; i++) {
+        for (uint16_t i=0; i < plength && length < this->maxpacketsize; i++) {
             buffer[length++] = payload[i];
         }
         
         uint8_t header = MQTTPUBLISH;
         if (retain) {
             header |= 1;
+        }
+
+        if (dup) {
+            header |= DUP_FLAG_ON_MASK; 
         }
 
         if (qos == QOS2)
@@ -412,7 +479,7 @@ uint16_t MQTT::writeString(const char* string, uint8_t* buf, uint16_t pos) {
     const char* idp = string;
     uint16_t i = 0;
     pos += 2;
-    while (*idp && pos < MQTT_MAX_PACKET_SIZE) {
+    while (*idp && pos < this->maxpacketsize) {
         buf[pos++] = *idp++;
         i++;
     }

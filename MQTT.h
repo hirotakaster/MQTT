@@ -98,7 +98,7 @@ private:
 #elif defined(ARDUINO)
     Client *_client;
 #endif
-    uint8_t buffer[MQTT_MAX_PACKET_SIZE];
+    uint8_t *buffer;
     uint16_t nextMsgId;
     unsigned long lastOutActivity;
     unsigned long lastInActivity;
@@ -112,6 +112,14 @@ private:
     String domain;
     uint8_t *ip;
     uint16_t port;
+    uint16_t maxpacketsize;
+    
+    void initialize(char* domain, uint8_t *ip, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize
+#if defined(SPARK) || (PLATFORM_ID==88)
+#elif defined(ARDUINO)
+        , Client& client
+#endif
+    );
 
 public:
     MQTT();
@@ -122,12 +130,28 @@ public:
         , Client& client
 #endif
         );
+        
+    MQTT(char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize
+#if defined(SPARK) || (PLATFORM_ID==88)
+#elif defined(ARDUINO)
+        , Client& client
+#endif
+        );
+        
     MQTT(uint8_t *, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int)
 #if defined(SPARK) || (PLATFORM_ID==88)
 #elif defined(ARDUINO)
         , Client& client
 #endif
         );
+    MQTT(uint8_t *, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize
+#if defined(SPARK) || (PLATFORM_ID==88)
+#elif defined(ARDUINO)
+        , Client& client
+#endif
+        );
+
+    ~MQTT();
 
     bool connect(const char *);
     bool connect(const char *, const char *, const char *);
@@ -137,10 +161,13 @@ public:
     
     bool publish(const char *, const char *);
     bool publish(const char *, const char *, EMQTT_QOS, uint16_t *messageid);
+    bool publish(const char *, const char *, EMQTT_QOS, bool, uint16_t *messageid);
     bool publish(const char *, const uint8_t *, unsigned int);
     bool publish(const char *, const uint8_t *, unsigned int, EMQTT_QOS, uint16_t *messageid);
+    bool publish(const char *, const uint8_t *, unsigned int, EMQTT_QOS, bool, uint16_t *messageid);
     bool publish(const char *, const uint8_t *, unsigned int, bool);
     bool publish(const char *, const uint8_t *, unsigned int, bool, EMQTT_QOS, uint16_t *messageid);
+    bool publish(const char *, const uint8_t *, unsigned int, bool, EMQTT_QOS, bool, uint16_t *messageid);
     void addQosCallback(void (*qoscallback)(unsigned int));
     bool publishRelease(uint16_t messageid);
 
@@ -150,6 +177,5 @@ public:
     bool loop();
     bool isConnected();
 };
-
 
 #endif
