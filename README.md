@@ -1,5 +1,5 @@
 # MQTT for Photon, Spark Core
-<a href="http://mqtt.org/" target=_blank>MQTT</a> publish/subscribe library for Photon, Spark Core version 0.3.7.
+<a href="http://mqtt.org/" target=_blank>MQTT</a> publish/subscribe library for Photon, Spark Core version 0.3.8.
 
 ## Source Code
 This lightweight library source code are only 2 files. firmware -> MQTT.cpp, MQTT.h.
