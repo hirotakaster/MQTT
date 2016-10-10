@@ -52,17 +52,17 @@ void setup() {
     // connect to the server
     client.connect("sparkclient");
 
-    // add qos callback
+    // add qos callback. If don't add qoscallback, ACK message from MQTT server is ignored.
     client.addQosCallback(qoscallback);
 
     // publish/subscribe
     if (client.isConnected()) {
-        // get messageid parameter at 4.
-
+        // can use messageid parameter at 4.
         uint16_t messageid;
-        client.publish("/outTopic", "hello world QOS1(message is NULL)", MQTT::QOS1);
         client.publish("/outTopic", "hello world QOS1", MQTT::QOS1, &messageid);
         Serial.println(messageid);
+
+        client.publish("/outTopic", "hello world QOS1(message is NULL)", MQTT::QOS1);
 
         client.publish("/outTopic", "hello world QOS2", MQTT::QOS2, &messageid);
         Serial.println(messageid);
