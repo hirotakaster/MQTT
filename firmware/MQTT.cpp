@@ -334,7 +334,7 @@ bool MQTT::publish(const char* topic, const uint8_t* payload, unsigned int pleng
 }
 
 bool MQTT::publish(const char* topic, const uint8_t* payload, unsigned int plength, EMQTT_QOS qos, bool dup, uint16_t *messageid) {
-    return publish(topic, payload, plength, false, QOS0, dup, messageid);
+    return publish(topic, payload, plength, false, qos, dup, messageid);
 }
 
 bool MQTT::publish(const char* topic, const uint8_t* payload, unsigned int plength, EMQTT_QOS qos, uint16_t *messageid) {
@@ -346,7 +346,7 @@ bool MQTT::publish(const char* topic, const uint8_t* payload, unsigned int pleng
 }
 
 bool MQTT::publish(const char* topic, const uint8_t* payload, unsigned int plength, bool retain, EMQTT_QOS qos, uint16_t *messageid) {
-    return publish(topic, payload, plength, retain, QOS0, false, messageid);
+    return publish(topic, payload, plength, retain, qos, false, messageid);
 }
 
 bool MQTT::publish(const char* topic, const uint8_t* payload, unsigned int plength, bool retain, EMQTT_QOS qos, bool dup, uint16_t *messageid) {
@@ -358,9 +358,11 @@ bool MQTT::publish(const char* topic, const uint8_t* payload, unsigned int pleng
         length = writeString(topic, buffer, length);
 
         if (qos == QOS2 || qos == QOS1) {
-            *messageid = nextMsgId++;
-            buffer[length++] = (*messageid >> 8);
-            buffer[length++] = (*messageid & 0xFF);
+            nextMsgId += 1;
+            buffer[length++] = (nextMsgId >> 8);
+            buffer[length++] = (nextMsgId & 0xFF);
+            if (messageid != NULL)
+                *messageid = nextMsgId++;
         }
         
         for (uint16_t i=0; i < plength && length < this->maxpacketsize; i++) {
