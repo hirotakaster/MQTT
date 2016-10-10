@@ -160,13 +160,13 @@ public:
     void disconnect();
     
     bool publish(const char *, const char *);
-    bool publish(const char *, const char *, EMQTT_QOS, uint16_t *messageid);
-    bool publish(const char *, const char *, EMQTT_QOS, bool, uint16_t *messageid);
+    bool publish(const char *, const char *, EMQTT_QOS, uint16_t *messageid = NULL);
+    bool publish(const char *, const char *, EMQTT_QOS, bool, uint16_t *messageid = NULL);
     bool publish(const char *, const uint8_t *, unsigned int);
-    bool publish(const char *, const uint8_t *, unsigned int, EMQTT_QOS, uint16_t *messageid);
-    bool publish(const char *, const uint8_t *, unsigned int, EMQTT_QOS, bool, uint16_t *messageid);
+    bool publish(const char *, const uint8_t *, unsigned int, EMQTT_QOS, uint16_t *messageid = NULL);
+    bool publish(const char *, const uint8_t *, unsigned int, EMQTT_QOS, bool, uint16_t *messageid = NULL);
     bool publish(const char *, const uint8_t *, unsigned int, bool);
-    bool publish(const char *, const uint8_t *, unsigned int, bool, EMQTT_QOS, uint16_t *messageid);
+    bool publish(const char *, const uint8_t *, unsigned int, bool, EMQTT_QOS, uint16_t *messageid = NULL);
     bool publish(const char *, const uint8_t *, unsigned int, bool, EMQTT_QOS, bool, uint16_t *messageid);
     void addQosCallback(void (*qoscallback)(unsigned int));
     bool publishRelease(uint16_t messageid);

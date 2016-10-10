@@ -60,6 +60,7 @@ void setup() {
         // get messageid parameter at 4.
 
         uint16_t messageid;
+        client.publish("/outTopic", "hello world QOS1(message is NULL)", MQTT::QOS1);
         client.publish("/outTopic", "hello world QOS1", MQTT::QOS1, &messageid);
         Serial.println(messageid);
 
