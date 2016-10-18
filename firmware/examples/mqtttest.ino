@@ -38,8 +38,8 @@ void setup() {
 
     // publish/subscribe
     if (client.isConnected()) {
-        client.publish("/outTopic","hello world");
-        client.subscribe("/inTopic");
+        client.publish("outTopic","hello world");
+        client.subscribe("inTopic");
     }
 }
 
