@@ -59,18 +59,18 @@ void setup() {
     if (client.isConnected()) {
         // can use messageid parameter at 4.
         uint16_t messageid;
-        client.publish("outTopic", "hello world QOS1", MQTT::QOS1, &messageid);
+        client.publish("outTopic/message", "hello world QOS1", MQTT::QOS1, &messageid);
         Serial.println(messageid);
 
-        client.publish("outTopic", "hello world QOS1(message is NULL)", MQTT::QOS1);
+        client.publish("outTopic/message", "hello world QOS1(message is NULL)", MQTT::QOS1);
 
-        client.publish("outTopic", "hello world QOS2", MQTT::QOS2, &messageid);
+        client.publish("outTopic/message", "hello world QOS2", MQTT::QOS2, &messageid);
         Serial.println(messageid);
 
         // save QoS2 message id.
         qos2messageid = messageid;
 
-        client.subscribe("inTopic");
+        client.subscribe("inTopic/message");
     }
 }
 
