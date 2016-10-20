@@ -86,8 +86,7 @@ void MQTT::initialize(char* domain, uint8_t *ip, uint16_t port, void (*callback)
 ) {
     this->callback = callback;
     this->qoscallback = NULL;
-    if (ip != NULL)
-        this->ip = ip;
+    this->ip = ip;
     if (domain != NULL)
         this->domain = domain;
     this->port = port;
