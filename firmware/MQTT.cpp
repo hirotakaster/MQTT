@@ -92,7 +92,8 @@ void MQTT::initialize(char* domain, uint8_t *ip, uint16_t port, void (*callback)
         this->domain = domain;
     this->port = port;
     
-    this->maxpacketsize = maxpacketsize;
+    // if maxpacketsize is over MQTT_MAX_PACKET_SIZE.
+    this->maxpacketsize = (maxpacketsize <= MQTT_MAX_PACKET_SIZE ? MQTT_MAX_PACKET_SIZE : maxpacketsize);
     buffer = new uint8_t[this->maxpacketsize];
 #if defined(SPARK) || (PLATFORM_ID==88)
     this->_client = new TCPClient();
