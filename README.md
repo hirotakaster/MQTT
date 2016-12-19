@@ -13,3 +13,38 @@ Some sample sketches for Spark Core and Photon included(firmware/examples/).
 
 ## Arduino compatible
 This library is Arduino compatible. Arduino version is <a href="https://github.com/hirotakaster/MQTT/tree/arduino">here</a>. 
+
+
+## developer examples
+some application use MQTT with Photon. here are developer examples.
+- <a href="http://www.instructables.com/id/Spark-Core-Photon-and-CloudMQTT/" target="_blank">Spark Core / Photon and CloudMQTT</a>
+- <a href="https://www.hackster.io/anasdalintakam/mqtt-publish-subscribe-using-rpi-esp-and-photon-864fe9#toc--particle-photon-as-mqtt-client-2" target="_blank">MQTT Publish-Subscribe Using Rpi, ESP and Photon</a>
+- <a href="http://www.kevinhoyt.com/2016/04/27/particle-photon-on-watson-iot/" target="_blank">Particle Photon on Watson IoT</a>
+- <a href="https://developer.ibm.com/recipes/tutorials/connecting-a-iot-device-of-the-watson-conversation-cardashboard-app/" target="_blank">Connecting IoT devices to the Watson Conversation Car-Dashboard app</a>
+- <a href="https://jp.mathworks.com/help/thingspeak/mqtt-api.html" target="_blank">ThingSpeak MQTT API</a>
+- <a href="https://www.losant.com/blog/how-to-connect-a-particle-photon-to-the-losant-iot-platform" target="_blank">HOW TO CONNECT A PARTICLE PHOTON TO THE LOSANT IOT PLATFORM</a>
+- <a href="https://medium.com/@stevecaldwell/how-i-hacked-my-humidor-with-losant-and-a-particle-photon-84342744755b#.b68apdmo1" target="_blank">How I Hacked my Humidor with Losant and a Particle Photon</a>
+- <a href="https://developer.artik.io/documentation/advanced-concepts/mqtt/color-mqtt.html" target="_blank">ARTIK as MQTT Message Broker</a>
+- <a href="https://ubidots.com/docs/devices/particleMQTT.html" target="_blank">Particle and Ubidots using MQTT</a>
+
+## faq
+1. Can't connect/publish/subscribe to the MQTT server?
+- Check your MQTT server and port(default 1883) is really working with the mosquitto_pub/sub command. And maybe your MQTT server can't connect from Internet because of firewall. Check your network environments.
+- Check your subscribe/publish topic name is really matched.
+- Perhaps device firmware network stack is failed. check your firmware version and bugs.
+- If you use MQTT-TLS, check your RooT CA pem file, client key, certifications is okay or not.
+- Several MQTT server will disconnect to the 1st connection when you use the same user_id. When the application call the connect method, use different user_id in every devices in connect method's 2nd argument. Use MAC address as a user_id will be better.
+<pre>
+   // device.1
+   client.connect("spark-client", "user_1", "password1");
+   // other device
+   client.connect("spark-client", "user_others", "password1");
+</pre>
+
+2. want to use over the 255 message size.
+In this library, max MQTT message size is defined "MQTT_MAX_PACKET_SIZE 255" in header file. But If you want to use over 255bytes, use the constructor 4th argument.
+<pre>
+    MQTT client("server_name", 1883, callback); // default 255bytes
+    MQTT client("server_name", 1883, callback, 512); // max 512bytes
+</pre>
+
