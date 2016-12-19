@@ -16,7 +16,7 @@ This library is Arduino compatible. Arduino version is <a href="https://github.c
 
 
 ## developer examples
-some application use MQTT with Photon. here are developer examples.
+some applications use MQTT with Photon. here are developer's reference examples.
 - <a href="http://www.instructables.com/id/Spark-Core-Photon-and-CloudMQTT/" target="_blank">Spark Core / Photon and CloudMQTT</a>
 - <a href="https://www.hackster.io/anasdalintakam/mqtt-publish-subscribe-using-rpi-esp-and-photon-864fe9#toc--particle-photon-as-mqtt-client-2" target="_blank">MQTT Publish-Subscribe Using Rpi, ESP and Photon</a>
 - <a href="http://www.kevinhoyt.com/2016/04/27/particle-photon-on-watson-iot/" target="_blank">Particle Photon on Watson IoT</a>
