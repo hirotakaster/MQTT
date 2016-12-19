@@ -28,7 +28,7 @@ some application use MQTT with Photon. here are developer examples.
 - <a href="https://ubidots.com/docs/devices/particleMQTT.html" target="_blank">Particle and Ubidots using MQTT</a>
 
 ## faq
-1. Can't connect/publish/subscribe to the MQTT server?
+### Can't connect/publish/subscribe to the MQTT server?
 - Check your MQTT server and port(default 1883) is really working with the mosquitto_pub/sub command. And maybe your MQTT server can't connect from Internet because of firewall. Check your network environments.
 - Check your subscribe/publish topic name is really matched.
 - Perhaps device firmware network stack is failed. check your firmware version and bugs.
@@ -37,11 +37,11 @@ some application use MQTT with Photon. here are developer examples.
 <pre>
    // device.1
    client.connect("spark-client", "user_1", "password1");
-   // other device
+   // other devices...
    client.connect("spark-client", "user_others", "password1");
 </pre>
 
-2. want to use over the 255 message size.
+### Want to use over the 255 message size.
 In this library, max MQTT message size is defined "MQTT_MAX_PACKET_SIZE 255" in header file. But If you want to use over 255bytes, use the constructor 4th argument.
 <pre>
     MQTT client("server_name", 1883, callback); // default 255bytes
