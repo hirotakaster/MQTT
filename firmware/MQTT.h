@@ -138,13 +138,13 @@ public:
 #endif
         );
         
-    MQTT(uint8_t *, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int)
+    MQTT(uint8_t *ip, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int)
 #if defined(SPARK) || (PLATFORM_ID==88)
 #elif defined(ARDUINO)
         , Client& client
 #endif
         );
-    MQTT(uint8_t *, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize
+    MQTT(uint8_t *ip, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize
 #if defined(SPARK) || (PLATFORM_ID==88)
 #elif defined(ARDUINO)
         , Client& client
@@ -153,27 +153,27 @@ public:
 
     ~MQTT();
 
-    bool connect(const char *);
-    bool connect(const char *, const char *, const char *);
-    bool connect(const char *, const char *, EMQTT_QOS, uint8_t, const char *);
-    bool connect(const char *, const char *, const char *, const char *, EMQTT_QOS, uint8_t, const char*);
+    bool connect(const char *id);
+    bool connect(const char *id, const char *user, const char *pass);
+    bool connect(const char *id, const char *user, EMQTT_QOS, uint8_t, const char *pass);
+    bool connect(const char *id, const char *user, const char *pass, const char* willTopic, EMQTT_QOS willQos, uint8_t willRetain, const char* willMessage);
     void disconnect();
     
-    bool publish(const char *, const char *);
-    bool publish(const char *, const char *, EMQTT_QOS, uint16_t *messageid = NULL);
-    bool publish(const char *, const char *, EMQTT_QOS, bool, uint16_t *messageid = NULL);
-    bool publish(const char *, const uint8_t *, unsigned int);
-    bool publish(const char *, const uint8_t *, unsigned int, EMQTT_QOS, uint16_t *messageid = NULL);
-    bool publish(const char *, const uint8_t *, unsigned int, EMQTT_QOS, bool, uint16_t *messageid = NULL);
-    bool publish(const char *, const uint8_t *, unsigned int, bool);
-    bool publish(const char *, const uint8_t *, unsigned int, bool, EMQTT_QOS, uint16_t *messageid = NULL);
-    bool publish(const char *, const uint8_t *, unsigned int, bool, EMQTT_QOS, bool, uint16_t *messageid);
+    bool publish(const char *topic, const char* payload);
+    bool publish(const char *topic, const char* payload, EMQTT_QOS qos, uint16_t *messageid = NULL);
+    bool publish(const char *topic, const char* payload, EMQTT_QOS qos, bool dup, uint16_t *messageid = NULL); 
+    bool publish(const char *topic, const uint8_t *pyaload, unsigned int plength);
+    bool publish(const char *topic, const uint8_t *payload, unsigned int plength, EMQTT_QOS qos, uint16_t *messageid = NULL);
+    bool publish(const char *topic, const uint8_t *payload, unsigned int plength, EMQTT_QOS qos, bool dup, uint16_t *messageid = NULL);
+    bool publish(const char *topic, const uint8_t *payload, unsigned int plength, bool retain);
+    bool publish(const char *topic, const uint8_t *payload, unsigned int plength, bool retain, EMQTT_QOS qos, uint16_t *messageid = NULL);
+    bool publish(const char *topic, const uint8_t *payload, unsigned int plength, bool retain, EMQTT_QOS qos, bool dup, uint16_t *messageid);
     void addQosCallback(void (*qoscallback)(unsigned int));
     bool publishRelease(uint16_t messageid);
 
-    bool subscribe(const char *);
-    bool subscribe(const char *, EMQTT_QOS);
-    bool unsubscribe(const char *);
+    bool subscribe(const char *topic);
+    bool subscribe(const char *topic, EMQTT_QOS);
+    bool unsubscribe(const char *topic);
     bool loop();
     bool isConnected();
 };
