@@ -34,7 +34,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
 }
 
 // QOS ack callback.
-// MQTT server sendback message id ack, if use QOS1 or QOS2.
+// if application use QOS1 or QOS2, MQTT server sendback ack message id.
 void qoscallback(unsigned int messageid) {
     Serial.print("Ack Message Id:");
     Serial.println(messageid);
@@ -57,17 +57,19 @@ void setup() {
 
     // publish/subscribe
     if (client.isConnected()) {
-        // can use messageid parameter at 4.
+        // it can use messageid parameter at 4.
         uint16_t messageid;
         client.publish("outTopic/message", "hello world QOS1", MQTT::QOS1, &messageid);
         Serial.println(messageid);
 
+        // if 4th parameter don't set or NULL, application can not check the message id to the ACK message from MQTT server. 
         client.publish("outTopic/message", "hello world QOS1(message is NULL)", MQTT::QOS1);
-
+        
+        // QOS=2
         client.publish("outTopic/message", "hello world QOS2", MQTT::QOS2, &messageid);
         Serial.println(messageid);
 
-        // save QoS2 message id.
+        // save QoS2 message id as global parameter.
         qos2messageid = messageid;
 
         client.subscribe("inTopic/message");
