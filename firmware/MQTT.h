@@ -83,14 +83,33 @@ sample code bearing this copyright.
 #define MQTTDISCONNECT  14 << 4 // Client is Disconnecting
 #define MQTTReserved    15 << 4 // Reserved
 
+
+// for debugging.
+#define DEBUG_MQTT_SERIAL_OUTPUT       1
+#if defined(DEBUG_MQTT_SERIAL_OUTPUT)
+#define debug_print(fmt, ...)  Serial.printf("[DEBUG] MQTT " fmt, ##__VA_ARGS__)
+#else /* !DEBUG_MQTT_SERIAL_OUTPUT */
+  #define debug_print(fmt, ...) ((void)0)
+#endif /* DEBUG_MQTT_SERIAL_OUTPUT */
+
+
 class MQTT {
 /** types */
 public:
-typedef enum{
+typedef enum {
     QOS0 = 0,
     QOS1 = 1,
     QOS2 = 2,
-}EMQTT_QOS;
+} EMQTT_QOS;
+
+typedef enum {
+    CONN_ACCEPT = 0,
+    CONN_UNACCEPTABLE_PROCOTOL = 1,
+    CONN_ID_REJECT = 2,
+    CONN_SERVER_UNAVAILALE = 3,
+    CONN_BAD_USER_PASSWORD = 4,
+    CONN_NOT_AUTHORIZED = 5
+} EMQTT_CONNACK_RESPONSE;
 
 private:
 #if defined(SPARK) || (PLATFORM_ID==88)

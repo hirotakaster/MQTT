@@ -182,10 +182,16 @@ bool MQTT::connect(const char *id, const char *user, const char *pass, const cha
             uint8_t llen;
             uint16_t len = readPacket(&llen);
          
-            if (len == 4 && buffer[3] == 0) {
-                lastInActivity = millis();
-                pingOutstanding = false;
-                return true;
+            if (len == 4) {
+                if (buffer[3] == CONN_ACCEPT) {
+                    lastInActivity = millis();
+                    pingOutstanding = false;
+                    debug_print(" Connect success\n");
+                    return true;
+                } else {
+                    // check EMQTT_CONNACK_RESPONSE code.
+                    debug_print(" Connect fail. code = [%d]\n", buffer[3]);
+                }
             }
         }
         _client->stop();
