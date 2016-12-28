@@ -27,7 +27,7 @@ some applications use MQTT with Photon. here are developer's reference examples.
 - <a href="https://developer.artik.io/documentation/advanced-concepts/mqtt/color-mqtt.html" target="_blank">ARTIK as MQTT Message Broker</a>
 - <a href="https://ubidots.com/docs/devices/particleMQTT.html" target="_blank">Particle and Ubidots using MQTT</a>
 
-## faq
+## FAQ
 ### Can't connect/publish/subscribe to the MQTT server?
 - Check your MQTT server and port(default 1883) is really working with the mosquitto_pub/sub command. And maybe your MQTT server can't connect from Internet because of firewall. Check your network environments.
 - Check your subscribe/publish topic name is really matched.
@@ -48,3 +48,8 @@ In this library, max MQTT message size is defined "MQTT_MAX_PACKET_SIZE 255" in 
     MQTT client("server_name", 1883, callback, 512); // max 512bytes
 </pre>
 
+### Can I use on old firmware?
+No, use default latest firmware. I test this library on default latest firmware or latest pre-release version. If you really want to use old firmware(I think don't need that case), maybe it can't work well and it is out of my assumption.
+
+### Bug or Problem?
+First of all, check the <a href="https://community.particle.io/" target="_blank">Particle community site<a/>. But still problem will not solve, please send a bug-fixed diff and Pull request or problem details to issue.
