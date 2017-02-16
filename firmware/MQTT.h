@@ -48,16 +48,9 @@ sample code bearing this copyright.
 //---------------------------------------------------------------------------
 */
 
-#ifndef MQTT_h
-#define MQTT_h
-
-#if defined(SPARK) || (PLATFORM_ID==88)
 #include "spark_wiring_string.h"
 #include "spark_wiring_tcpclient.h"
 #include "spark_wiring_usbserial.h"
-#elif defined(ARDUINO)
-#include "Client.h"
-#endif
 
 // MQTT_MAX_PACKET_SIZE : Maximum packet size
 // this size is total of [MQTT Header(Max:5byte) + Topic Name Length + Topic Name + Message ID(QoS1|2) + Payload]
@@ -112,11 +105,7 @@ typedef enum {
 } EMQTT_CONNACK_RESPONSE;
 
 private:
-#if defined(SPARK) || (PLATFORM_ID==88)
     TCPClient *_client;
-#elif defined(ARDUINO)
-    Client *_client;
-#endif
     uint8_t *buffer;
     uint16_t nextMsgId;
     unsigned long lastOutActivity;
@@ -134,70 +123,26 @@ private:
     int keepalive;
     uint16_t maxpacketsize;
 
-    void initialize(char* domain, uint8_t *ip, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize
-#if defined(SPARK) || (PLATFORM_ID==88)
-#elif defined(ARDUINO)
-        , Client& client
-#endif
-    );
+    void initialize(char* domain, uint8_t *ip, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize);
 
 public:
     MQTT();
 
-    MQTT(char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int)
-#if defined(SPARK) || (PLATFORM_ID==88)
-#elif defined(ARDUINO)
-        , Client& client
-#endif
-        );
+    MQTT(char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int));
 
-    MQTT(char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize
-#if defined(SPARK) || (PLATFORM_ID==88)
-#elif defined(ARDUINO)
-        , Client& client
-#endif
-        );
+    MQTT(char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize);
 
-    MQTT(uint8_t *ip, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int)
-#if defined(SPARK) || (PLATFORM_ID==88)
-#elif defined(ARDUINO)
-        , Client& client
-#endif
-        );
-    MQTT(uint8_t *ip, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize
-#if defined(SPARK) || (PLATFORM_ID==88)
-#elif defined(ARDUINO)
-        , Client& client
-#endif
-        );
+    MQTT(uint8_t *ip, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int));
 
+    MQTT(uint8_t *ip, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize);
 
-    MQTT(char* domain, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int)
-#if defined(SPARK) || (PLATFORM_ID==88)
-#elif defined(ARDUINO)
-        , Client& client
-#endif
-        );
+    MQTT(char* domain, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int));
 
-    MQTT(char* domain, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize
-#if defined(SPARK) || (PLATFORM_ID==88)
-#elif defined(ARDUINO)
-        , Client& client
-#endif
-        );
+    MQTT(char* domain, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize);
 
-    MQTT(uint8_t *ip, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int)
-#if defined(SPARK) || (PLATFORM_ID==88)
-#elif defined(ARDUINO)
-        , Client& client
-#endif
-        );
-    MQTT(uint8_t *ip, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize
-#if defined(SPARK) || (PLATFORM_ID==88)
-#elif defined(ARDUINO)
-        , Client& client
-#endif
-        );
+    MQTT(uint8_t *ip, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int));
+
+    MQTT(uint8_t *ip, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize);
 
     ~MQTT();
 
@@ -225,5 +170,3 @@ public:
     bool loop();
     bool isConnected();
 };
-
-#endif

@@ -1,10 +1,5 @@
 #include "MQTT.h"
-
-#if defined(ARDUINO)
-#include "Arduino.h"
-#elif defined(SPARK)
 #include "application.h"
-#endif
 
 #define LOGGING
 
@@ -19,108 +14,36 @@ MQTT::MQTT() {
     this->ip = NULL;
 }
 
-MQTT::MQTT(char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int)
-#if defined(SPARK) || (PLATFORM_ID==88)
-#elif defined(ARDUINO)
-        , Client& client
-#endif
-    ) {
-#if defined(SPARK) || (PLATFORM_ID==88)
+MQTT::MQTT(char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int)) {
     this->initialize(domain, NULL, port, MQTT_DEFAULT_KEEPALIVE, callback, MQTT_MAX_PACKET_SIZE);
-#elif defined(ARDUINO)
-    this->initialize(domain, NULL, port, MQTT_DEFAULT_KEEPALIVE, callback, MQTT_MAX_PACKET_SIZE, client);
-#endif
 }
 
-MQTT::MQTT(char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize
-#if defined(SPARK) || (PLATFORM_ID==88)
-#elif defined(ARDUINO)
-        , Client& client
-#endif
-    ) {
-#if defined(SPARK) || (PLATFORM_ID==88)
+MQTT::MQTT(char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize) {
     this->initialize(domain, NULL, port, MQTT_DEFAULT_KEEPALIVE, callback, maxpacketsize);
-#elif defined(ARDUINO)
-    this->initialize(domain, NULL, port, MQTT_DEFAULT_KEEPALIVE, callback, maxpacketsize, client);
-#endif
 }
 
-MQTT::MQTT(uint8_t *ip, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int)
-#if defined(SPARK) || (PLATFORM_ID==88)
-#elif defined(ARDUINO)
-        , Client& client
-#endif
-    ) {
-#if defined(SPARK) || (PLATFORM_ID==88)
+MQTT::MQTT(uint8_t *ip, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int)) {
     this->initialize(NULL, ip, port, MQTT_DEFAULT_KEEPALIVE, callback, MQTT_MAX_PACKET_SIZE);
-#elif defined(ARDUINO)
-    this->initialize(NULL, ip, port, MQTT_DEFAULT_KEEPALIVE, callback, MQTT_MAX_PACKET_SIZE, client);
-#endif
 }
 
-MQTT::MQTT(uint8_t *ip, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize
-#if defined(SPARK) || (PLATFORM_ID==88)
-#elif defined(ARDUINO)
-        , Client& client
-#endif
-    ) {
-#if defined(SPARK) || (PLATFORM_ID==88)
+MQTT::MQTT(uint8_t *ip, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize) {
     this->initialize(NULL, ip, port, MQTT_DEFAULT_KEEPALIVE, callback, maxpacketsize);
-#elif defined(ARDUINO)
-    this->initialize(NULL, ip, port, MQTT_DEFAULT_KEEPALIVE, callback, maxpacketsize, client);
-#endif
 }
 
-MQTT::MQTT(char* domain, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int)
-#if defined(SPARK) || (PLATFORM_ID==88)
-#elif defined(ARDUINO)
-        , Client& client
-#endif
-    ) {
-#if defined(SPARK) || (PLATFORM_ID==88)
+MQTT::MQTT(char* domain, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int)) {
     this->initialize(domain, NULL, port, keepalive, callback, MQTT_MAX_PACKET_SIZE);
-#elif defined(ARDUINO)
-    this->initialize(domain, NULL, port, keepalive, callback, MQTT_MAX_PACKET_SIZE, client);
-#endif
 }
 
-MQTT::MQTT(char* domain, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize
-#if defined(SPARK) || (PLATFORM_ID==88)
-#elif defined(ARDUINO)
-        , Client& client
-#endif
-    ) {
-#if defined(SPARK) || (PLATFORM_ID==88)
+MQTT::MQTT(char* domain, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize) {
     this->initialize(domain, NULL, port, keepalive, callback, maxpacketsize);
-#elif defined(ARDUINO)
-    this->initialize(domain, NULL, port, keepalive, callback, maxpacketsize, client);
-#endif
 }
 
-MQTT::MQTT(uint8_t *ip, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int)
-#if defined(SPARK) || (PLATFORM_ID==88)
-#elif defined(ARDUINO)
-        , Client& client
-#endif
-    ) {
-#if defined(SPARK) || (PLATFORM_ID==88)
+MQTT::MQTT(uint8_t *ip, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int)) {
     this->initialize(NULL, ip, port, keepalive, callback, MQTT_MAX_PACKET_SIZE);
-#elif defined(ARDUINO)
-    this->initialize(NULL, ip, port, keepalive, callback, MQTT_MAX_PACKET_SIZE, client);
-#endif
 }
 
-MQTT::MQTT(uint8_t *ip, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize
-#if defined(SPARK) || (PLATFORM_ID==88)
-#elif defined(ARDUINO)
-        , Client& client
-#endif
-    ) {
-#if defined(SPARK) || (PLATFORM_ID==88)
+MQTT::MQTT(uint8_t *ip, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize) {
     this->initialize(NULL, ip, port, keepalive, callback, maxpacketsize);
-#elif defined(ARDUINO)
-    this->initialize(NULL, ip, port, keepalive, callback, maxpacketsize, client);
-#endif
 }
 
 MQTT::~MQTT() {
@@ -130,12 +53,7 @@ MQTT::~MQTT() {
     }
 }
 
-void MQTT::initialize(char* domain, uint8_t *ip, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize
-#if defined(SPARK) || (PLATFORM_ID==88)
-#elif defined(ARDUINO)
-        , Client& client
-#endif
-) {
+void MQTT::initialize(char* domain, uint8_t *ip, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize) {
     this->callback = callback;
     this->qoscallback = NULL;
     if (ip != NULL)
@@ -147,11 +65,7 @@ void MQTT::initialize(char* domain, uint8_t *ip, uint16_t port, int keepalive, v
     // if maxpacketsize is over MQTT_MAX_PACKET_SIZE.
     this->maxpacketsize = (maxpacketsize <= MQTT_MAX_PACKET_SIZE ? MQTT_MAX_PACKET_SIZE : maxpacketsize);
     buffer = new uint8_t[this->maxpacketsize];
-#if defined(SPARK) || (PLATFORM_ID==88)
     this->_client = new TCPClient();
-#elif defined(ARDUINO)
-    this->_client = &client;
-#endif
 }
 
 

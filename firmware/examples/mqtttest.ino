@@ -18,13 +18,13 @@ void callback(char* topic, byte* payload, unsigned int length) {
     p[length] = NULL;
     String message(p);
 
-    if (message.equals("RED"))    
+    if (message.equals("RED"))
         RGB.color(255, 0, 0);
-    else if (message.equals("GREEN"))    
+    else if (message.equals("GREEN"))
         RGB.color(0, 255, 0);
-    else if (message.equals("BLUE"))    
+    else if (message.equals("BLUE"))
         RGB.color(0, 0, 255);
-    else    
+    else
         RGB.color(255, 255, 255);
     delay(1000);
 }
@@ -32,7 +32,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
 
 void setup() {
     RGB.control(true);
-    
+
     // connect to the server
     client.connect("sparkclient");
 
