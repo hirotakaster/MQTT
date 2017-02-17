@@ -41,11 +41,18 @@ some applications use MQTT with Photon. here are developer's reference examples.
    client.connect("spark-client", "user_others", "password1");
 </pre>
 
+### I want to change MQTT keep alive timeout.
+MQTT keepalive timeout is defined "MQTT_DEFAULT_KEEPALIVE 15"(15 sec) in header file. You can change the keepalive timeout in constructor.
+<pre>
+    MQTT client("server_name", 1883, callback); // default: send keepalive packet to MQTT server in every 15sec.
+    MQTT client("server_name", 1883, 30, callback); // keepliave timeout is 30sec.
+</pre>
+
 ### Want to use over the 255 message size.
 In this library, max MQTT message size is defined "MQTT_MAX_PACKET_SIZE 255" in header file. But If you want to use over 255bytes, use the constructor 4th argument.
 <pre>
     MQTT client("server_name", 1883, callback); // default 255bytes
-    MQTT client("server_name", 1883, callback, 512); // max 512bytes
+    MQTT client("server_name", 1883, MQTT_DEFAULT_KEEPALIVE, callback, 512); // max 512bytes
 </pre>
 
 ### Can I use on old firmware?
