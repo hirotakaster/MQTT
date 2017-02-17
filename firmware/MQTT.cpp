@@ -1,10 +1,5 @@
 #include "MQTT.h"
-
-#if defined(ARDUINO)
-#include "Arduino.h"
-#elif defined(SPARK)
 #include "application.h"
-#endif
 
 #define LOGGING
 
@@ -19,56 +14,36 @@ MQTT::MQTT() {
     this->ip = NULL;
 }
 
-MQTT::MQTT(char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int)
-#if defined(SPARK) || (PLATFORM_ID==88)
-#elif defined(ARDUINO)
-        , Client& client
-#endif
-    ) {
-#if defined(SPARK) || (PLATFORM_ID==88)
-    this->initialize(domain, NULL, port, callback, MQTT_MAX_PACKET_SIZE);
-#elif defined(ARDUINO)
-    this->initialize(domain, NULL, port, callback, MQTT_MAX_PACKET_SIZE, client);
-#endif
+MQTT::MQTT(char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int)) {
+    this->initialize(domain, NULL, port, MQTT_DEFAULT_KEEPALIVE, callback, MQTT_MAX_PACKET_SIZE);
 }
 
-MQTT::MQTT(char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize
-#if defined(SPARK) || (PLATFORM_ID==88)
-#elif defined(ARDUINO)
-        , Client& client
-#endif
-    ) {
-#if defined(SPARK) || (PLATFORM_ID==88)
-    this->initialize(domain, NULL, port, callback, maxpacketsize);
-#elif defined(ARDUINO)
-    this->initialize(domain, NULL, port, callback, maxpacketsize, client);
-#endif
+MQTT::MQTT(char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize) {
+    this->initialize(domain, NULL, port, MQTT_DEFAULT_KEEPALIVE, callback, maxpacketsize);
 }
 
-MQTT::MQTT(uint8_t *ip, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int)
-#if defined(SPARK) || (PLATFORM_ID==88)
-#elif defined(ARDUINO)
-        , Client& client
-#endif
-    ) {
-#if defined(SPARK) || (PLATFORM_ID==88)
-    this->initialize(NULL, ip, port, callback, MQTT_MAX_PACKET_SIZE);
-#elif defined(ARDUINO)
-    this->initialize(NULL, ip, port, callback, MQTT_MAX_PACKET_SIZE, client);
-#endif
+MQTT::MQTT(uint8_t *ip, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int)) {
+    this->initialize(NULL, ip, port, MQTT_DEFAULT_KEEPALIVE, callback, MQTT_MAX_PACKET_SIZE);
 }
 
-MQTT::MQTT(uint8_t *ip, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize
-#if defined(SPARK) || (PLATFORM_ID==88)
-#elif defined(ARDUINO)
-        , Client& client
-#endif
-    ) {
-#if defined(SPARK) || (PLATFORM_ID==88)
-    this->initialize(NULL, ip, port, callback, maxpacketsize);
-#elif defined(ARDUINO)
-    this->initialize(NULL, ip, port, callback, maxpacketsize, client);
-#endif
+MQTT::MQTT(uint8_t *ip, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize) {
+    this->initialize(NULL, ip, port, MQTT_DEFAULT_KEEPALIVE, callback, maxpacketsize);
+}
+
+MQTT::MQTT(char* domain, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int)) {
+    this->initialize(domain, NULL, port, keepalive, callback, MQTT_MAX_PACKET_SIZE);
+}
+
+MQTT::MQTT(char* domain, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize) {
+    this->initialize(domain, NULL, port, keepalive, callback, maxpacketsize);
+}
+
+MQTT::MQTT(uint8_t *ip, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int)) {
+    this->initialize(NULL, ip, port, keepalive, callback, MQTT_MAX_PACKET_SIZE);
+}
+
+MQTT::MQTT(uint8_t *ip, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize) {
+    this->initialize(NULL, ip, port, keepalive, callback, maxpacketsize);
 }
 
 MQTT::~MQTT() {
@@ -78,12 +53,7 @@ MQTT::~MQTT() {
     }
 }
 
-void MQTT::initialize(char* domain, uint8_t *ip, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize
-#if defined(SPARK) || (PLATFORM_ID==88)
-#elif defined(ARDUINO)
-        , Client& client
-#endif
-) {
+void MQTT::initialize(char* domain, uint8_t *ip, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize) {
     this->callback = callback;
     this->qoscallback = NULL;
     if (ip != NULL)
@@ -91,15 +61,11 @@ void MQTT::initialize(char* domain, uint8_t *ip, uint16_t port, void (*callback)
     if (domain != NULL)
         this->domain = domain;
     this->port = port;
-    
+    this->keepalive = keepalive;
     // if maxpacketsize is over MQTT_MAX_PACKET_SIZE.
     this->maxpacketsize = (maxpacketsize <= MQTT_MAX_PACKET_SIZE ? MQTT_MAX_PACKET_SIZE : maxpacketsize);
     buffer = new uint8_t[this->maxpacketsize];
-#if defined(SPARK) || (PLATFORM_ID==88)
     this->_client = new TCPClient();
-#elif defined(ARDUINO)
-    this->_client = &client;
-#endif    
 }
 
 
@@ -154,8 +120,8 @@ bool MQTT::connect(const char *id, const char *user, const char *pass, const cha
 
             buffer[length++] = v;
 
-            buffer[length++] = ((MQTT_KEEPALIVE) >> 8);
-            buffer[length++] = ((MQTT_KEEPALIVE) & 0xFF);
+            buffer[length++] = ((this->keepalive) >> 8);
+            buffer[length++] = ((this->keepalive) & 0xFF);
             length = writeString(id, buffer, length);
             if (willTopic) {
                 length = writeString(willTopic, buffer, length);
@@ -168,20 +134,20 @@ bool MQTT::connect(const char *id, const char *user, const char *pass, const cha
                     length = writeString(pass,buffer,length);
                 }
             }
-         
+
             write(MQTTCONNECT, buffer, length-5);
             lastInActivity = lastOutActivity = millis();
-         
+
             while (!_client->available()) {
                 unsigned long t = millis();
-                if (t-lastInActivity > MQTT_KEEPALIVE*1000UL) {
+                if (t-lastInActivity > this->keepalive*1000UL) {
                     _client->stop();
                     return false;
                 }
             }
             uint8_t llen;
             uint16_t len = readPacket(&llen);
-         
+
             if (len == 4) {
                 if (buffer[3] == CONN_ACCEPT) {
                     lastInActivity = millis();
@@ -213,7 +179,7 @@ uint16_t MQTT::readPacket(uint8_t* lengthLength) {
     uint8_t digit = 0;
     uint16_t skip = 0;
     uint8_t start = 0;
-   
+
     do {
         digit = readByte();
         buffer[len++] = digit;
@@ -241,7 +207,7 @@ uint16_t MQTT::readPacket(uint8_t* lengthLength) {
         }
         len++;
     }
-   
+
     if (len > this->maxpacketsize) {
         len = 0; // This will cause the packet to be ignored.
     }
@@ -252,7 +218,7 @@ uint16_t MQTT::readPacket(uint8_t* lengthLength) {
 bool MQTT::loop() {
     if (isConnected()) {
         unsigned long t = millis();
-        if ((t - lastInActivity > MQTT_KEEPALIVE*1000UL) || (t - lastOutActivity > MQTT_KEEPALIVE*1000UL)) {
+        if ((t - lastInActivity > this->keepalive*1000UL) || (t - lastOutActivity > this->keepalive*1000UL)) {
             if (pingOutstanding) {
                 _client->stop();
                 return false;
@@ -286,7 +252,7 @@ bool MQTT::loop() {
                             msgId = (buffer[llen+3+tl]<<8)+buffer[llen+3+tl+1];
                             payload = buffer+llen+3+tl+2;
                             callback(topic,payload,len-llen-3-tl-2);
-                    
+
                             buffer[0] = MQTTPUBACK;
                             buffer[1] = 2;
                             buffer[2] = (msgId >> 8);
@@ -371,18 +337,18 @@ bool MQTT::publish(const char* topic, const uint8_t* payload, unsigned int pleng
             if (messageid != NULL)
                 *messageid = nextMsgId++;
         }
-        
+
         for (uint16_t i=0; i < plength && length < this->maxpacketsize; i++) {
             buffer[length++] = payload[i];
         }
-        
+
         uint8_t header = MQTTPUBLISH;
         if (retain) {
             header |= 1;
         }
 
         if (dup) {
-            header |= DUP_FLAG_ON_MASK; 
+            header |= DUP_FLAG_ON_MASK;
         }
 
         if (qos == QOS2)
@@ -432,7 +398,7 @@ bool MQTT::write(uint8_t header, uint8_t* buf, uint16_t length) {
         buf[5-llen+i] = lenBuf[i];
     }
     rc = _client->write(buf+(4-llen), length+1+llen);
-   
+
     lastOutActivity = millis();
     return (rc == 1+llen+length);
 }
