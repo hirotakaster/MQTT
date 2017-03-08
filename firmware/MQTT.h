@@ -123,8 +123,6 @@ private:
     int keepalive;
     uint16_t maxpacketsize;
 
-    void initialize(char* domain, uint8_t *ip, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize);
-
 public:
     MQTT();
 
@@ -146,6 +144,7 @@ public:
 
     ~MQTT();
 
+    void initialize(char* domain, uint8_t *ip, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize);
     bool connect(const char *id);
     bool connect(const char *id, const char *user, const char *pass);
     bool connect(const char *id, const char *user, EMQTT_QOS, uint8_t, const char *pass);
