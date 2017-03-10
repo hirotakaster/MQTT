@@ -68,6 +68,24 @@ void MQTT::initialize(char* domain, uint8_t *ip, uint16_t port, int keepalive, v
     this->_client = new TCPClient();
 }
 
+void MQTT::setBroker(char* domain, uint16_t port) {
+    if(isConnected()) {
+        disconnect();
+    }
+    this->domain = domain;
+    this->ip = NULL;
+    this->port = port;
+}
+
+void MQTT::setBroker(uint8_t *ip, uint16_t port) {
+    if(isConnected()) {
+        disconnect();
+    }
+    this->domain = NULL;
+    this->ip = ip;
+    this->port = port;
+}
+
 
 void MQTT::addQosCallback(void (*qoscallback)(unsigned int)) {
     this->qoscallback = qoscallback;
