@@ -20,15 +20,14 @@ void callback(char* topic, byte* payload, unsigned int length) {
     char p[length + 1];
     memcpy(p, payload, length);
     p[length] = NULL;
-    String message(p);
 
-    if (message.equals("RED"))    
+    if (!strcmp(p, "RED"))
         RGB.color(255, 0, 0);
-    else if (message.equals("GREEN"))    
+    else if (!strcmp(p, "GREEN"))
         RGB.color(0, 255, 0);
-    else if (message.equals("BLUE"))    
+    else if (!strcmp(p, "BLUE"))
         RGB.color(0, 0, 255);
-    else    
+    else
         RGB.color(255, 255, 255);
     delay(1000);
 }
