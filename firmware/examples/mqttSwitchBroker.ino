@@ -1,4 +1,4 @@
-#include "MQTT/MQTT.h"
+#include "MQTT.h"
 
 char domain1[] = "iot.eclipse.org";
 char domain2[] = "test.mosquitto.org";
