@@ -1,5 +1,4 @@
 #include "MQTT.h"
-#include "application.h"
 
 #define LOGGING
 
@@ -81,7 +80,7 @@ void MQTT::setBroker(uint8_t *ip, uint16_t port) {
     if(isConnected()) {
         disconnect();
     }
-    this->domain = NULL;
+    this->domain = "";
     this->ip = ip;
     this->port = port;
 }
@@ -487,3 +486,4 @@ bool MQTT::isConnected() {
     if (!rc) _client->stop();
     return rc;
 }
+
