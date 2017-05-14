@@ -55,8 +55,7 @@ MQTT::~MQTT() {
 void MQTT::initialize(char* domain, uint8_t *ip, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize) {
     this->callback = callback;
     this->qoscallback = NULL;
-    if (ip != NULL)
-        this->ip = ip;
+    this->ip = ip;
     if (domain != NULL)
         this->domain = domain;
     this->port = port;
