@@ -103,6 +103,10 @@ bool MQTT::connect(const char *id, const char* willTopic, EMQTT_QOS willQos, uin
 }
 
 bool MQTT::connect(const char *id, const char *user, const char *pass, const char* willTopic, EMQTT_QOS willQos, uint8_t willRetain, const char* willMessage) {
+  return connect(id,NULL,NULL,willTopic,willQos,willRetain,willMessage,true);
+}
+
+bool MQTT::connect(const char *id, const char *user, const char *pass, const char* willTopic, EMQTT_QOS willQos, uint8_t willRetain, const char* willMessage, bool cleanSession) {
     if (!isConnected()) {
         int result = 0;
         if (ip == NULL)
@@ -125,6 +129,10 @@ bool MQTT::connect(const char *id, const char *user, const char *pass, const cha
                 v = 0x06|(willQos<<3)|(willRetain<<5);
             } else {
                 v = 0x02;
+            }
+
+            if (cleanSession) {
+              v = v|0x02;
             }
 
             if(user != NULL) {
