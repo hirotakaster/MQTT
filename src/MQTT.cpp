@@ -131,8 +131,8 @@ bool MQTT::connect(const char *id, const char *user, const char *pass, const cha
                 v = 0x02;
             }
 
-            if (cleanSession) {
-              v = v|0x02;
+            if (!cleanSession) {
+              v = v&0xfd;
             }
 
             if(user != NULL) {
