@@ -151,8 +151,6 @@ public:
 
     bool connect(const char *id);
     bool connect(const char *id, const char *user, const char *pass);
-    bool connect(const char *id, const char *user, EMQTT_QOS, uint8_t, const char *pass);
-    bool connect(const char *id, const char *user, const char *pass, const char* willTopic, EMQTT_QOS willQos, uint8_t willRetain, const char* willMessage);
     bool connect(const char *id, const char *user, const char *pass, const char* willTopic, EMQTT_QOS willQos, uint8_t willRetain, const char* willMessage, bool cleanSession);
     void disconnect();
 

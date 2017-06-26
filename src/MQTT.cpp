@@ -90,20 +90,13 @@ void MQTT::addQosCallback(void (*qoscallback)(unsigned int)) {
     this->qoscallback = qoscallback;
 }
 
+
 bool MQTT::connect(const char *id) {
-    return connect(id,NULL,NULL,0,QOS0,0,0);
+    return connect(id, NULL, NULL, 0, QOS0, 0, 0, true);
 }
 
 bool MQTT::connect(const char *id, const char *user, const char *pass) {
-    return connect(id,user,pass,0,QOS0,0,0);
-}
-
-bool MQTT::connect(const char *id, const char* willTopic, EMQTT_QOS willQos, uint8_t willRetain, const char* willMessage) {
-    return connect(id,NULL,NULL,willTopic,willQos,willRetain,willMessage);
-}
-
-bool MQTT::connect(const char *id, const char *user, const char *pass, const char* willTopic, EMQTT_QOS willQos, uint8_t willRetain, const char* willMessage) {
-  return connect(id,NULL,NULL,willTopic,willQos,willRetain,willMessage,true);
+    return connect(id, user, pass, 0, QOS0, 0, 0, true);
 }
 
 bool MQTT::connect(const char *id, const char *user, const char *pass, const char* willTopic, EMQTT_QOS willQos, uint8_t willRetain, const char* willMessage, bool cleanSession) {
