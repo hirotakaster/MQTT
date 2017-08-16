@@ -488,3 +488,7 @@ bool MQTT::isConnected() {
     return rc;
 }
 
+void MQTT::clear() {
+  _client->stop();
+  lastInActivity = lastOutActivity = millis();
+}
