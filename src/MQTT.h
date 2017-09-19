@@ -105,7 +105,7 @@ typedef enum {
 } EMQTT_CONNACK_RESPONSE;
 
 private:
-    TCPClient *_client;
+    TCPClient _client;
     uint8_t *buffer;
     uint16_t nextMsgId;
     unsigned long lastOutActivity;
