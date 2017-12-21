@@ -26,6 +26,7 @@ some applications use MQTT with Photon. here are developer's reference examples.
 - <a href="https://medium.com/@stevecaldwell/how-i-hacked-my-humidor-with-losant-and-a-particle-photon-84342744755b#.b68apdmo1" target="_blank">How I Hacked my Humidor with Losant and a Particle Photon</a>
 - <a href="https://developer.artik.io/documentation/advanced-concepts/mqtt/color-mqtt.html" target="_blank">ARTIK as MQTT Message Broker</a>
 - <a href="https://ubidots.com/docs/devices/particleMQTT.html" target="_blank">Particle and Ubidots using MQTT</a>
+- <a href="https://www.twilio.com/docs/quickstart/sync-iot/mqtt-particle-photon-sync-iot" target="_blank">USING TWILIO SYNC WITH MQTT ON A PARTICLE PHOTON</a>
 
 ## FAQ
 ### Can't connect/publish/subscribe to the MQTT server?
