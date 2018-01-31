@@ -26,6 +26,7 @@ some applications use MQTT with Photon. here are developer's reference examples.
 
 ## sample source
 ```
+#include "application.h"
 #include "MQTT.h"
 
 void callback(char* topic, byte* payload, unsigned int length);
