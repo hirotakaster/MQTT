@@ -24,6 +24,49 @@ some applications use MQTT with Photon. here are developer's reference examples.
 - <a href="https://ubidots.com/docs/devices/particleMQTT.html" target="_blank">Particle and Ubidots using MQTT</a>
 - <a href="https://www.twilio.com/docs/quickstart/sync-iot/mqtt-particle-photon-sync-iot" target="_blank">USING TWILIO SYNC WITH MQTT ON A PARTICLE PHOTON</a>
 
+## sample source
+```
+#include "MQTT.h"
+
+void callback(char* topic, byte* payload, unsigned int length);
+MQTT client("iot.eclipse.org", 1883, callback);
+
+// recieve message
+void callback(char* topic, byte* payload, unsigned int length) {
+    char p[length + 1];
+    memcpy(p, payload, length);
+    p[length] = NULL;
+
+    if (!strcmp(p, "RED"))
+        RGB.color(255, 0, 0);
+    else if (!strcmp(p, "GREEN"))
+        RGB.color(0, 255, 0);
+    else if (!strcmp(p, "BLUE"))
+        RGB.color(0, 0, 255);
+    else
+        RGB.color(255, 255, 255);
+    delay(1000);
+}
+
+
+void setup() {
+    RGB.control(true);
+
+    // connect to the server(unique id by Time.now())
+    client.connect("sparkclient_" + String(Time.now()));
+
+    // publish/subscribe
+    if (client.isConnected()) {
+        client.publish("outTopic/message","hello world");
+        client.subscribe("inTopic/message");
+    }
+}
+
+void loop() {
+    if (client.isConnected())
+        client.loop();
+}
+```
 ## FAQ
 ### Can't connect/publish/subscribe to the MQTT server?
 - Check your MQTT server and port(default 1883) is really working with the mosquitto_pub/sub command. And maybe your MQTT server can't connect from Internet because of firewall. Check your network environments.
