@@ -104,7 +104,7 @@ bool MQTT::connect(const char *id, const char *user, const char *pass) {
     return connect(id, user, pass, 0, QOS0, 0, 0, true);
 }
 
-bool MQTT::connect(const char *id, const char *user, const char *pass, const char* willTopic, EMQTT_QOS willQos, uint8_t willRetain, const char* willMessage, bool cleanSession) {
+bool MQTT::connect(const char *id, const char *user, const char *pass, const char* willTopic, EMQTT_QOS willQos, uint8_t willRetain, const char* willMessage, bool cleanSession, MQTT_VERSION version) {
     if (!isConnected()) {
         int result = 0;
         if (ip == NULL)
@@ -114,15 +114,19 @@ bool MQTT::connect(const char *id, const char *user, const char *pass, const cha
 
         if (result) {
             nextMsgId = 1;
-            uint8_t d[9] = {0x00,0x06,'M','Q','I','s','d','p',MQTTPROTOCOLVERSION};
-            // Leave room in the buffer for header and variable length field
             uint16_t length = 5;
-            unsigned int j;
-            for (j = 0;j<9;j++) {
-                buffer[length++] = d[j];
+
+            if (version == MQTT_V311) {
+                const uint8_t MQTT_HEADER_V311[] = {0x00,0x04,'M','Q','T','T',MQTT_V311};
+                memcpy(buffer + length, MQTT_HEADER_V311, sizeof(MQTT_HEADER_V311));
+                length+=sizeof(MQTT_HEADER_V311);
+            } else {
+                const uint8_t MQTT_HEADER_V31[] = {0x00,0x06,'M','Q','I','s','d','p', MQTT_V31};
+                memcpy(buffer + length, MQTT_HEADER_V31, sizeof(MQTT_HEADER_V31));
+                length+=sizeof(MQTT_HEADER_V31);
             }
 
-            uint8_t v;
+            uint8_t v = 0;
             if (willTopic) {
                 v = 0x06|(willQos<<3)|(willRetain<<5);
             } else {
@@ -497,4 +501,3 @@ void MQTT::clear() {
   _client.stop();
   lastInActivity = lastOutActivity = millis();
 }
-

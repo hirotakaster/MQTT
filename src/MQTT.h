@@ -95,6 +95,11 @@ typedef enum {
     QOS2 = 2,
 } EMQTT_QOS;
 
+typedef enum{
+    MQTT_V31 = 3,
+    MQTT_V311 = 4
+} MQTT_VERSION;
+
 typedef enum {
     CONN_ACCEPT = 0,
     CONN_UNACCEPTABLE_PROCOTOL = 1,
@@ -151,7 +156,7 @@ public:
 
     bool connect(const char *id);
     bool connect(const char *id, const char *user, const char *pass);
-    bool connect(const char *id, const char *user, const char *pass, const char* willTopic, EMQTT_QOS willQos, uint8_t willRetain, const char* willMessage, bool cleanSession);
+    bool connect(const char *id, const char *user, const char *pass, const char* willTopic, EMQTT_QOS willQos, uint8_t willRetain, const char* willMessage, bool cleanSession, MQTT_VERSION version = MQTT_V311);
     void disconnect();
     void clear();
 
@@ -175,4 +180,3 @@ public:
 };
 
 #endif  // __MQTT_H_
-
