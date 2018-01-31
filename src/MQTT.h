@@ -78,7 +78,7 @@ sample code bearing this copyright.
 
 
 // for debugging.
-#define DEBUG_MQTT_SERIAL_OUTPUT       1
+// #define DEBUG_MQTT_SERIAL_OUTPUT
 #if defined(DEBUG_MQTT_SERIAL_OUTPUT)
 #define debug_print(fmt, ...)  Serial.printf("[DEBUG] MQTT " fmt, ##__VA_ARGS__)
 #else /* !DEBUG_MQTT_SERIAL_OUTPUT */

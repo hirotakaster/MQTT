@@ -7,7 +7,8 @@ void callback(char* topic, byte* payload, unsigned int length);
  * byte server[] = { XXX,XXX,XXX,XXX };
  * MQTT client(server, 1883, callback);
  * want to use domain name,
- * MQTT client("www.sample.com", 1883, callback);
+ * exp) iot.eclipse.org is Eclipse Open MQTT Broker: https://iot.eclipse.org/getting-started
+ * MQTT client("iot.eclipse.org", 1883, callback);
  **/
 MQTT client("server_name", 1883, callback);
 
