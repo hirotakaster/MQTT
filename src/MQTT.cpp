@@ -9,11 +9,6 @@
 #define DUP_FLAG_OFF_MASK           (0<<3)
 #define DUP_FLAG_ON_MASK            (1<<3)
 
-MQTT::MQTT() {
-    this->ip = NULL;
-    this->buffer = NULL;
-}
-
 MQTT::MQTT(char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int)) {
     this->initialize(domain, NULL, port, MQTT_DEFAULT_KEEPALIVE, callback, MQTT_MAX_PACKET_SIZE);
 }

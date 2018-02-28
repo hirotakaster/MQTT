@@ -111,7 +111,7 @@ typedef enum {
 
 private:
     TCPClient _client;
-    uint8_t *buffer;
+    uint8_t *buffer = NULL;
     uint16_t nextMsgId;
     unsigned long lastOutActivity;
     unsigned long lastInActivity;
@@ -123,7 +123,7 @@ private:
     bool write(uint8_t header, uint8_t* buf, uint16_t length);
     uint16_t writeString(const char* string, uint8_t* buf, uint16_t pos);
     String domain;
-    uint8_t *ip;
+    uint8_t *ip = NULL;
     uint16_t port;
     int keepalive;
     uint16_t maxpacketsize;
@@ -131,7 +131,7 @@ private:
     void initialize(char* domain, uint8_t *ip, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize);
 
 public:
-    MQTT();
+    MQTT(){};
 
     MQTT(char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int));
 
