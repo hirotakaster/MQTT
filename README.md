@@ -100,4 +100,4 @@ In this library, max MQTT message size is defined "MQTT_MAX_PACKET_SIZE 255" in 
 No, use default latest firmware. I test this library on default latest firmware or latest pre-release version. If you really want to use old firmware(I think don't need that case), maybe it can't work well and it is out of my assumption.
 
 ### Bug or Problem?
-First of all, check the <a href="https://community.particle.io/" target="_blank">Particle community site<a/>. But still problem will not solve, please send a bug-fixed diff and Pull request or problem details to issue.
+First of all, check the <a href="https://community.particle.io/" target="_blank">Particle community site<a/>. But still your problem will not clear, please send a bug-fixed diff and Pull request or problem details to issue.
