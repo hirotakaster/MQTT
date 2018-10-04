@@ -281,38 +281,45 @@ bool MQTT::loop() {
                             buffer[3] = (msgId & 0xFF);
                             _client.write(buffer,4);
                             lastOutActivity = t;
-						}
-						else if ((buffer[0] & 0x06) == MQTTQOS2_HEADER_MASK) { // QoS=2
-							msgId = (buffer[llen + 3 + tl] << 8) + buffer[llen + 3 + tl + 1];
-							payload = buffer + llen + 3 + tl + 2;
-							callback(topic, payload, len - llen - 3 - tl - 2);
+        						    } else if ((buffer[0] & 0x06) == MQTTQOS2_HEADER_MASK) { // QoS=2
+							              msgId = (buffer[llen + 3 + tl] << 8) + buffer[llen + 3 + tl + 1];
+							              payload = buffer + llen + 3 + tl + 2;
+							              callback(topic, payload, len - llen - 3 - tl - 2);
 
-							buffer[0] = MQTTPUBREC; // respond with PUBREC
-							buffer[1] = 2;
-							buffer[2] = (msgId >> 8);
-							buffer[3] = (msgId & 0xFF);
-							_client.write(buffer, 4);
-							lastOutActivity = t;
-						} else {
+              							buffer[0] = MQTTPUBREC; // respond with PUBREC
+              							buffer[1] = 2;
+              							buffer[2] = (msgId >> 8);
+              							buffer[3] = (msgId & 0xFF);
+              							_client.write(buffer, 4);
+              							lastOutActivity = t;
+            						} else {
                             payload = buffer+llen+3+tl;
                             callback(topic,payload,len-llen-3-tl);
                         }
                     }
-                } else if (type == MQTTPUBACK || type == MQTTPUBREC) {
+                } else if (type == MQTTPUBREC) {
+                    // check for the situation that QoS2 receive PUBREC, should return PUBREL
+                    msgId = (buffer[2] << 8) + buffer[3];
+                    this->publishRelease(msgId);
+                } else if (type == MQTTPUBACK) {
                     if (qoscallback) {
-                        // msgId only present for QOS==0
+                        // this case QOS==1
                         if (len == 4 && (buffer[0]&0x06) == MQTTQOS0_HEADER_MASK) {
                             msgId = (buffer[2]<<8)+buffer[3];
                             this->qoscallback(msgId);
                         }
                     }
-					// check for the situation that QoS2 receive PUBREC, should return PUBREL
-					if (type == MQTTPUBREC) {
-						msgId = (buffer[2] << 8) + buffer[3];
-						this->publishRelease(msgId);
-					}
+                } else if (type == MQTTPUBREL) {
+                  msgId = (buffer[2] << 8) + buffer[3];
+                  this->publishComplete(msgId);
                 } else if (type == MQTTPUBCOMP) {
-                    // TODO:if something...
+                  if (qoscallback) {
+                      // msgId only present for QOS==0
+                      if (len == 4 && (buffer[0]&0x06) == MQTTQOS0_HEADER_MASK) {
+                          msgId = (buffer[2]<<8)+buffer[3];
+                          this->qoscallback(msgId);
+                      }
+                  }
                 } else if (type == MQTTSUBACK) {
                     // if something...
                 } else if (type == MQTTPINGREQ) {
@@ -415,6 +422,18 @@ bool MQTT::publishRelease(uint16_t messageid) {
     return false;
 }
 
+bool MQTT::publishComplete(uint16_t messageid) {
+    if (isConnected()) {
+        uint16_t length = 0;
+        // reserved bits in MQTT v3.1.1
+        buffer[length++] = MQTTPUBCOMP | MQTTQOS1_HEADER_MASK;
+        buffer[length++] = 2;
+        buffer[length++] = (messageid >> 8);
+        buffer[length++] = (messageid & 0xFF);
+        return _client.write(buffer, length);
+    }
+    return false;
+}
 
 bool MQTT::write(uint8_t header, uint8_t* buf, uint16_t length) {
     uint8_t lenBuf[4];
@@ -448,8 +467,6 @@ bool MQTT::subscribe(const char* topic) {
 }
 
 bool MQTT::subscribe(const char* topic, EMQTT_QOS qos) {
-    if (qos < 0 || qos > 1)
-        return false;
 
     if (isConnected()) {
         // Leave room in the buffer for header and variable length field

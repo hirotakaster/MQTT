@@ -1,5 +1,5 @@
 # MQTT for Photon, Spark Core
-<a href="http://mqtt.org/" target=_blank>MQTT</a> publish/subscribe library for Photon, Spark Core version 0.4.27.
+<a href="http://mqtt.org/" target=_blank>MQTT</a> publish/subscribe library for Photon, Spark Core version 0.4.28.
 
 ## Source Code
 This lightweight library source code are only 2 files. firmware -> MQTT.cpp, MQTT.h.
@@ -101,3 +101,8 @@ No, use default latest firmware. I test this library on default latest firmware 
 
 ### Bug or Problem?
 First of all, check the <a href="https://community.particle.io/" target="_blank">Particle community site<a/>. But still your problem will not clear, please send a bug-fixed diff and Pull request or problem details to issue.
+
+### Pull Request 
+If you have a bug or feature, please send a pull request.
+Thanks for all developer's pull request!
+

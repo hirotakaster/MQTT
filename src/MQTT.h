@@ -129,6 +129,8 @@ private:
     uint16_t maxpacketsize;
 
     void initialize(char* domain, uint8_t *ip, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize);
+    bool publishRelease(uint16_t messageid);
+    bool publishComplete(uint16_t messageid);
 
 public:
     MQTT(){};
@@ -170,7 +172,6 @@ public:
     bool publish(const char *topic, const uint8_t *payload, unsigned int plength, bool retain, EMQTT_QOS qos, uint16_t *messageid = NULL);
     bool publish(const char *topic, const uint8_t *payload, unsigned int plength, bool retain, EMQTT_QOS qos, bool dup, uint16_t *messageid);
     void addQosCallback(void (*qoscallback)(unsigned int));
-    bool publishRelease(uint16_t messageid);
 
     bool subscribe(const char *topic);
     bool subscribe(const char *topic, EMQTT_QOS);

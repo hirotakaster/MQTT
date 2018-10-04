@@ -38,17 +38,12 @@ void callback(char* topic, byte* payload, unsigned int length) {
 void qoscallback(unsigned int messageid) {
     Serial.print("Ack Message Id:");
     Serial.println(messageid);
-
-    if (messageid == qos2messageid) {
-        Serial.println("Release QoS2 Message");
-        client.publishRelease(qos2messageid);
-    }
 }
 
 void setup() {
     Serial.begin(9600);
     RGB.control(true);
-    
+
     // connect to the server
     client.connect("sparkclient");
 
@@ -57,14 +52,14 @@ void setup() {
 
     // publish/subscribe
     if (client.isConnected()) {
-        // it can use messageid parameter at 4.
+        // get the messageid from parameter at 4.
         uint16_t messageid;
         client.publish("outTopic/message", "hello world QOS1", MQTT::QOS1, &messageid);
         Serial.println(messageid);
 
-        // if 4th parameter don't set or NULL, application can not check the message id to the ACK message from MQTT server. 
+        // if 4th parameter don't set or NULL, application can not check the message id to the ACK message from MQTT server.
         client.publish("outTopic/message", "hello world QOS1(message is NULL)", MQTT::QOS1);
-        
+
         // QOS=2
         client.publish("outTopic/message", "hello world QOS2", MQTT::QOS2, &messageid);
         Serial.println(messageid);
@@ -72,7 +67,8 @@ void setup() {
         // save QoS2 message id as global parameter.
         qos2messageid = messageid;
 
-        client.subscribe("inTopic/message");
+        // MQTT subscribe endpoint could have the QoS
+        client.subscribe("inTopic/message", MQTT::QOS2);
     }
 }
 
@@ -80,3 +76,4 @@ void loop() {
     if (client.isConnected())
         client.loop();
 }
+
