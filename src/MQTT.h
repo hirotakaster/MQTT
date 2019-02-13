@@ -163,6 +163,7 @@ public:
     void clear();
 
     bool publish(const char *topic, const char* payload);
+    bool publish(const char *topic, const char* payload, bool retain);
     bool publish(const char *topic, const char* payload, EMQTT_QOS qos, uint16_t *messageid = NULL);
     bool publish(const char *topic, const char* payload, EMQTT_QOS qos, bool dup, uint16_t *messageid = NULL);
     bool publish(const char *topic, const uint8_t *pyaload, unsigned int plength);

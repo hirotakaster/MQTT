@@ -340,6 +340,10 @@ bool MQTT::publish(const char* topic, const char* payload) {
     return publish(topic, (uint8_t*)payload, strlen(payload), false, QOS0, NULL);
 }
 
+bool MQTT::publish(const char* topic, const char* payload, bool retain) {
+    return publish(topic, (uint8_t*)payload, strlen(payload), retain, QOS0, NULL);
+}
+
 bool MQTT::publish(const char * topic, const char* payload, EMQTT_QOS qos, bool dup, uint16_t *messageid) {
     return publish(topic, (uint8_t*)payload, strlen(payload), false, qos, dup, messageid);
 }
