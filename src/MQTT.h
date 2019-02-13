@@ -42,6 +42,21 @@ sample code bearing this copyright.
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //---------------------------------------------------------------------------
+
+bug fixed and features pull requests
+ * add publish(char*, char*, bool retain) #77
+ * Updating readme.md #75
+ * Fix bugs #74
+ * Added setBroker method to update domain or ip and port. #52
+ * Added keep alive setting #49
+ * Added support for clean session flag #47
+ * Fixed a buffer overflow / bad allocation size #38
+ * Topics should not start with '/' #37
+ * Completed path for Build IDE compatibility #23
+ * QOS given as enum type - refer github issue 12 #15
+ * retained is now a system keyword, fixes compiler issue #9
+ * replace boolean with bool and include application.h #4
+ * Proper include path for MQTT.h #1
 */
 
 #ifndef __MQTT_H_
