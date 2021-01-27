@@ -1,5 +1,5 @@
 # MQTT for Photon, Spark Core
-<a href="http://mqtt.org/" target=_blank>MQTT</a> publish/subscribe library for Photon, Spark Core version 0.4.29.
+<a href="http://mqtt.org/" target=_blank>MQTT</a> publish/subscribe library for Photon, Argon, Tracker One...etc version 0.4.30.
 
 ## Source Code
 This lightweight library source code is only 2 files. firmware -> MQTT.cpp, MQTT.h.
@@ -11,6 +11,7 @@ Some sample sketches for Spark Core and Photon included (firmware/examples/).
  - mqtttest.ino	: simple pub/sub sample. 
  - mqttqostest.ino : QoS1, QoS2 publish and callback sample.
  - mqttSwitchBroker.ino : Example of how to switch to different brokers.
+ - threadtest.ino : Example of SYSTEM_THREAD(ENABLED).
 
 ## developer examples
 some applications use MQTT with Photon. here are developer's reference examples.
