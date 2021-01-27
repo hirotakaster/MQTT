@@ -20,6 +20,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 Much of the code was inspired by Arduino Nicholas pubsubclient
 sample code bearing this copyright.
+
 //---------------------------------------------------------------------------
 // Copyright (c) 2008-2012 Nicholas O'Leary
 //
@@ -142,29 +143,30 @@ private:
     uint16_t port;
     int keepalive;
     uint16_t maxpacketsize;
+    os_mutex_t mutex_lock;
+    bool thread = false;
 
-    void initialize(char* domain, uint8_t *ip, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize);
+    void initialize(char* domain, uint8_t *ip, uint16_t port, int keepalive, int maxpacketsize, 
+                void (*callback)(char*,uint8_t*,unsigned int), bool thread = false);
     bool publishRelease(uint16_t messageid);
     bool publishComplete(uint16_t messageid);
 
+    class MutexLocker {
+        MQTT * mqtt;
+        public:
+        MutexLocker(MQTT *mqtt) { this->mqtt = mqtt; if (mqtt->thread) os_mutex_lock(mqtt->mutex_lock); }
+        ~MutexLocker() { if (mqtt->thread) os_mutex_unlock(mqtt->mutex_lock); }
+    };
 public:
+
     MQTT(){};
 
-    MQTT(char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int));
-
-    MQTT(char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize);
-
-    MQTT(uint8_t *ip, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int));
-
-    MQTT(uint8_t *ip, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize);
-
-    MQTT(char* domain, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int));
-
-    MQTT(char* domain, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize);
-
-    MQTT(uint8_t *ip, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int));
-
-    MQTT(uint8_t *ip, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize);
+    MQTT(char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int), bool thread = false);
+    MQTT(uint8_t *ip, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int), bool thread = false);
+    MQTT(char* domain, uint16_t port, int maxpacketsize, void (*callback)(char*,uint8_t*,unsigned int), bool thread = false);
+    MQTT(uint8_t *ip, uint16_t port, int maxpacketsize, void (*callback)(char*,uint8_t*,unsigned int), bool thread = false);
+    MQTT(char* domain, uint16_t port, int maxpacketsize, int keepalive, void (*callback)(char*,uint8_t*,unsigned int), bool thread = false);
+    MQTT(uint8_t *ip, uint16_t port, int maxpacketsize, int keepalive, void (*callback)(char*,uint8_t*,unsigned int), bool thread = false);
 
     ~MQTT();
 
@@ -181,7 +183,7 @@ public:
     bool publish(const char *topic, const char* payload, bool retain);
     bool publish(const char *topic, const char* payload, EMQTT_QOS qos, uint16_t *messageid = NULL);
     bool publish(const char *topic, const char* payload, EMQTT_QOS qos, bool dup, uint16_t *messageid = NULL);
-    bool publish(const char *topic, const uint8_t *payload, unsigned int plength);
+    bool publish(const char *topic, const uint8_t *pyaload, unsigned int plength);
     bool publish(const char *topic, const uint8_t *payload, unsigned int plength, EMQTT_QOS qos, uint16_t *messageid = NULL);
     bool publish(const char *topic, const uint8_t *payload, unsigned int plength, EMQTT_QOS qos, bool dup, uint16_t *messageid = NULL);
     bool publish(const char *topic, const uint8_t *payload, unsigned int plength, bool retain);

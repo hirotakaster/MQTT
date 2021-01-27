@@ -9,36 +9,34 @@
 #define DUP_FLAG_OFF_MASK           (0<<3)
 #define DUP_FLAG_ON_MASK            (1<<3)
 
-MQTT::MQTT(char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int)) {
-    this->initialize(domain, NULL, port, MQTT_DEFAULT_KEEPALIVE, callback, MQTT_MAX_PACKET_SIZE);
+MQTT::MQTT(char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int),
+            bool thread) {
+    this->initialize(domain, NULL, port, MQTT_DEFAULT_KEEPALIVE, MQTT_MAX_PACKET_SIZE, callback, thread);
 }
 
-MQTT::MQTT(char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize) {
-    this->initialize(domain, NULL, port, MQTT_DEFAULT_KEEPALIVE, callback, maxpacketsize);
+MQTT::MQTT(char* domain, uint16_t port, int maxpacketsize, void (*callback)(char*,uint8_t*,unsigned int),
+            bool thread) {
+    this->initialize(domain, NULL, port, MQTT_DEFAULT_KEEPALIVE, maxpacketsize, callback, thread);
 }
 
-MQTT::MQTT(uint8_t *ip, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int)) {
-    this->initialize(NULL, ip, port, MQTT_DEFAULT_KEEPALIVE, callback, MQTT_MAX_PACKET_SIZE);
+MQTT::MQTT(uint8_t *ip, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int),
+            bool thread) {
+    this->initialize(NULL, ip, port, MQTT_DEFAULT_KEEPALIVE, MQTT_MAX_PACKET_SIZE, callback, thread);
 }
 
-MQTT::MQTT(uint8_t *ip, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize) {
-    this->initialize(NULL, ip, port, MQTT_DEFAULT_KEEPALIVE, callback, maxpacketsize);
+MQTT::MQTT(uint8_t *ip, uint16_t port, int maxpacketsize, void (*callback)(char*,uint8_t*,unsigned int),
+            bool thread) {
+    this->initialize(NULL, ip, port, MQTT_DEFAULT_KEEPALIVE, maxpacketsize, callback, thread);
 }
 
-MQTT::MQTT(char* domain, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int)) {
-    this->initialize(domain, NULL, port, keepalive, callback, MQTT_MAX_PACKET_SIZE);
+MQTT::MQTT(char* domain, uint16_t port, int maxpacketsize, int keepalive, void (*callback)(char*,uint8_t*,unsigned int),
+            bool thread) {
+    this->initialize(domain, NULL, port, keepalive, maxpacketsize, callback, thread);
 }
 
-MQTT::MQTT(char* domain, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize) {
-    this->initialize(domain, NULL, port, keepalive, callback, maxpacketsize);
-}
-
-MQTT::MQTT(uint8_t *ip, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int)) {
-    this->initialize(NULL, ip, port, keepalive, callback, MQTT_MAX_PACKET_SIZE);
-}
-
-MQTT::MQTT(uint8_t *ip, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize) {
-    this->initialize(NULL, ip, port, keepalive, callback, maxpacketsize);
+MQTT::MQTT(uint8_t *ip, uint16_t port, int maxpacketsize, int keepalive, void (*callback)(char*,uint8_t*,unsigned int),
+            bool thread) {
+    this->initialize(NULL, ip, port, keepalive, maxpacketsize, callback, thread);
 }
 
 MQTT::~MQTT() {
@@ -50,7 +48,12 @@ MQTT::~MQTT() {
       delete[] buffer;
 }
 
-void MQTT::initialize(char* domain, uint8_t *ip, uint16_t port, int keepalive, void (*callback)(char*,uint8_t*,unsigned int), int maxpacketsize) {
+void MQTT::initialize(char* domain, uint8_t *ip, uint16_t port, int keepalive, int maxpacketsize, 
+                    void (*callback)(char*,uint8_t*,unsigned int), bool thread) {
+    if (thread) {
+        this->thread = true;
+        os_mutex_create(&mutex_lock);
+    }
     this->callback = callback;
     this->qoscallback = NULL;
     if (ip != NULL)
@@ -101,6 +104,7 @@ bool MQTT::connect(const char *id, const char *user, const char *pass) {
 
 bool MQTT::connect(const char *id, const char *user, const char *pass, const char* willTopic, EMQTT_QOS willQos, uint8_t willRetain, const char* willMessage, bool cleanSession, MQTT_VERSION version) {
     if (!isConnected()) {
+        MutexLocker lock(this);
         int result = 0;
         if (ip == NULL)
             result = _client.connect(this->domain.c_str(), this->port);
@@ -239,6 +243,8 @@ uint16_t MQTT::readPacket(uint8_t* lengthLength) {
 
 bool MQTT::loop() {
     if (isConnected()) {
+        MutexLocker lock(this);
+
         unsigned long t = millis();
         if ((t - lastInActivity > this->keepalive*1000UL) || (t - lastOutActivity > this->keepalive*1000UL)) {
             if (pingOutstanding) {
@@ -253,6 +259,7 @@ bool MQTT::loop() {
                 pingOutstanding = true;
             }
         }
+
         if (_client.available()) {
             uint8_t llen;
             uint16_t len = readPacket(&llen);
@@ -281,18 +288,18 @@ bool MQTT::loop() {
                             buffer[3] = (msgId & 0xFF);
                             _client.write(buffer,4);
                             lastOutActivity = t;
-        						    } else if ((buffer[0] & 0x06) == MQTTQOS2_HEADER_MASK) { // QoS=2
-							              msgId = (buffer[llen + 3 + tl] << 8) + buffer[llen + 3 + tl + 1];
-							              payload = buffer + llen + 3 + tl + 2;
-							              callback(topic, payload, len - llen - 3 - tl - 2);
+                                    } else if ((buffer[0] & 0x06) == MQTTQOS2_HEADER_MASK) { // QoS=2
+                                        msgId = (buffer[llen + 3 + tl] << 8) + buffer[llen + 3 + tl + 1];
+                                        payload = buffer + llen + 3 + tl + 2;
+                                        callback(topic, payload, len - llen - 3 - tl - 2);
 
-              							buffer[0] = MQTTPUBREC; // respond with PUBREC
-              							buffer[1] = 2;
-              							buffer[2] = (msgId >> 8);
-              							buffer[3] = (msgId & 0xFF);
-              							_client.write(buffer, 4);
-              							lastOutActivity = t;
-            						} else {
+                                        buffer[0] = MQTTPUBREC; // respond with PUBREC
+                                        buffer[1] = 2;
+                                        buffer[2] = (msgId >> 8);
+                                        buffer[3] = (msgId & 0xFF);
+                                        _client.write(buffer, 4);
+                                        lastOutActivity = t;
+                                    } else {
                             payload = buffer+llen+3+tl;
                             callback(topic,payload,len-llen-3-tl);
                         }
@@ -310,16 +317,16 @@ bool MQTT::loop() {
                         }
                     }
                 } else if (type == MQTTPUBREL) {
-                  msgId = (buffer[2] << 8) + buffer[3];
-                  this->publishComplete(msgId);
+                msgId = (buffer[2] << 8) + buffer[3];
+                this->publishComplete(msgId);
                 } else if (type == MQTTPUBCOMP) {
-                  if (qoscallback) {
-                      // msgId only present for QOS==0
-                      if (len == 4 && (buffer[0]&0x06) == MQTTQOS0_HEADER_MASK) {
-                          msgId = (buffer[2]<<8)+buffer[3];
-                          this->qoscallback(msgId);
-                      }
-                  }
+                if (qoscallback) {
+                    // msgId only present for QOS==0
+                    if (len == 4 && (buffer[0]&0x06) == MQTTQOS0_HEADER_MASK) {
+                        msgId = (buffer[2]<<8)+buffer[3];
+                        this->qoscallback(msgId);
+                    }
+                }
                 } else if (type == MQTTSUBACK) {
                     // if something...
                 } else if (type == MQTTPINGREQ) {
@@ -374,6 +381,7 @@ bool MQTT::publish(const char* topic, const uint8_t* payload, unsigned int pleng
 
 bool MQTT::publish(const char* topic, const uint8_t* payload, unsigned int plength, bool retain, EMQTT_QOS qos, bool dup, uint16_t *messageid) {
     if (isConnected()) {
+        MutexLocker lock(this);
         // Leave room in the buffer for header and variable length field
         uint16_t length = 5;
         memset(buffer, 0, this->maxpacketsize);
@@ -415,6 +423,7 @@ bool MQTT::publish(const char* topic, const uint8_t* payload, unsigned int pleng
 
 bool MQTT::publishRelease(uint16_t messageid) {
     if (isConnected()) {
+        MutexLocker lock(this);
         uint16_t length = 0;
         // reserved bits in MQTT v3.1.1
         buffer[length++] = MQTTPUBREL | MQTTQOS1_HEADER_MASK;
@@ -428,6 +437,7 @@ bool MQTT::publishRelease(uint16_t messageid) {
 
 bool MQTT::publishComplete(uint16_t messageid) {
     if (isConnected()) {
+        MutexLocker lock(this);
         uint16_t length = 0;
         // reserved bits in MQTT v3.1.1
         buffer[length++] = MQTTPUBCOMP | MQTTQOS1_HEADER_MASK;
@@ -474,6 +484,7 @@ bool MQTT::subscribe(const char* topic, EMQTT_QOS qos) {
 
     if (isConnected()) {
         // Leave room in the buffer for header and variable length field
+        MutexLocker lock(this);
         uint16_t length = 5;
         nextMsgId++;
         if (nextMsgId == 0) {
@@ -490,6 +501,7 @@ bool MQTT::subscribe(const char* topic, EMQTT_QOS qos) {
 
 bool MQTT::unsubscribe(const char* topic) {
     if (isConnected()) {
+        MutexLocker lock(this);
         uint16_t length = 5;
         nextMsgId++;
         if (nextMsgId == 0) {
@@ -504,6 +516,7 @@ bool MQTT::unsubscribe(const char* topic) {
 }
 
 void MQTT::disconnect() {
+    MutexLocker lock(this);
     buffer[0] = MQTTDISCONNECT;
     buffer[1] = 0;
     _client.write(buffer,2);
