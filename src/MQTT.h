@@ -154,8 +154,29 @@ private:
     class MutexLocker {
         MQTT * mqtt;
         public:
-        MutexLocker(MQTT *mqtt) { this->mqtt = mqtt; if (mqtt->thread) os_mutex_lock(mqtt->mutex_lock); }
-        ~MutexLocker() { if (mqtt->thread) os_mutex_unlock(mqtt->mutex_lock); }
+        MutexLocker(MQTT *mqtt) {
+#if defined(SPARK)
+#if defined(PLATFORM_ID)
+#if (PLATFORM_ID == 0)
+#else
+            this->mqtt = mqtt;
+            if (mqtt->thread)
+                os_mutex_lock(mqtt->mutex_lock);
+#endif
+#endif
+#endif
+        }
+        ~MutexLocker() {
+#if defined(SPARK)
+#if defined(PLATFORM_ID)
+#if (PLATFORM_ID == 0)
+#else
+            if (mqtt->thread)
+                os_mutex_unlock(mqtt->mutex_lock);
+#endif
+#endif
+#endif
+        }
     };
 public:
 
