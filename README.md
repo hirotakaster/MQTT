@@ -95,8 +95,8 @@ MQTT keepalive timeout is defined "MQTT_DEFAULT_KEEPALIVE 15"(15 sec) in header 
 ### Want to use over the 255 byte message size.
 In this library, the maximum MQTT message size is defined as "MQTT_MAX_PACKET_SIZE 255" in the header file. If you want to use over 255 bytes, use the constructor's last argument.
 <pre>
-    MQTT client("server_name", 1883, callback); // default 255 bytes
-    MQTT client("server_name", 1883, MQTT_DEFAULT_KEEPALIVE, callback, 512); // max 512 bytes
+    MQTT client("server_name", 1883, callback);      // default 255 bytes
+    MQTT client("server_name", 1883, 512, callback); // max 512 bytes
 </pre>
 
 ### Can I use on old firmware?
