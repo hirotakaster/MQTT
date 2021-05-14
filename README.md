@@ -89,7 +89,7 @@ void loop() {
 MQTT keepalive timeout is defined "MQTT_DEFAULT_KEEPALIVE 15"(15 sec) in header file. You can change the keepalive timeout in constructor.
 <pre>
     MQTT client("server_name", 1883, callback); // default: send keepalive packet to MQTT server every 15sec.
-    MQTT client("server_name", 1883, 30, callback); // keepalive timeout is 30 sec.
+    MQTT client("server_name", 1883, 256, 30, callback); // keepalive timeout is 30 seconds, default message size also added to be able to access correct constructor 
 </pre>
 
 ### Want to use over the 255 byte message size.
