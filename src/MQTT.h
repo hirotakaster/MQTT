@@ -139,14 +139,14 @@ private:
     bool write(uint8_t header, uint8_t* buf, uint16_t length);
     uint16_t writeString(const char* string, uint8_t* buf, uint16_t pos);
     String domain;
-    uint8_t *ip = NULL;
+    const uint8_t *ip = NULL;
     uint16_t port;
     int keepalive;
     uint16_t maxpacketsize;
     os_mutex_t mutex_lock;
     bool thread = false;
 
-    void initialize(char* domain, uint8_t *ip, uint16_t port, int keepalive, int maxpacketsize, 
+    void initialize(const char* domain, const uint8_t *ip, uint16_t port, int keepalive, int maxpacketsize, 
                 void (*callback)(char*,uint8_t*,unsigned int), bool thread = false);
     bool publishRelease(uint16_t messageid);
     bool publishComplete(uint16_t messageid);
@@ -182,17 +182,17 @@ public:
 
     MQTT(){};
 
-    MQTT(char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int), bool thread = false);
-    MQTT(uint8_t *ip, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int), bool thread = false);
-    MQTT(char* domain, uint16_t port, int maxpacketsize, void (*callback)(char*,uint8_t*,unsigned int), bool thread = false);
-    MQTT(uint8_t *ip, uint16_t port, int maxpacketsize, void (*callback)(char*,uint8_t*,unsigned int), bool thread = false);
-    MQTT(char* domain, uint16_t port, int maxpacketsize, int keepalive, void (*callback)(char*,uint8_t*,unsigned int), bool thread = false);
-    MQTT(uint8_t *ip, uint16_t port, int maxpacketsize, int keepalive, void (*callback)(char*,uint8_t*,unsigned int), bool thread = false);
+    MQTT(const char* domain, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int), bool thread = false);
+    MQTT(const uint8_t *ip, uint16_t port, void (*callback)(char*,uint8_t*,unsigned int), bool thread = false);
+    MQTT(const char* domain, uint16_t port, int maxpacketsize, void (*callback)(char*,uint8_t*,unsigned int), bool thread = false);
+    MQTT(const uint8_t *ip, uint16_t port, int maxpacketsize, void (*callback)(char*,uint8_t*,unsigned int), bool thread = false);
+    MQTT(const char* domain, uint16_t port, int maxpacketsize, int keepalive, void (*callback)(char*,uint8_t*,unsigned int), bool thread = false);
+    MQTT(const uint8_t *ip, uint16_t port, int maxpacketsize, int keepalive, void (*callback)(char*,uint8_t*,unsigned int), bool thread = false);
 
     ~MQTT();
 
-    void setBroker(char* domain, uint16_t port);
-    void setBroker(uint8_t *ip, uint16_t port);
+    void setBroker(const char* domain, uint16_t port);
+    void setBroker(const uint8_t *ip, uint16_t port);
 
     bool connect(const char *id);
     bool connect(const char *id, const char *user, const char *pass);
