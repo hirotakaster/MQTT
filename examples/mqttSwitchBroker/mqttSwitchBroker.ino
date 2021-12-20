@@ -1,15 +1,15 @@
 #include "MQTT.h"
 
-char domain1[] = "iot.eclipse.org";
-char domain2[] = "test.mosquitto.org";
-byte server1[] = {192,168,1,2};
-byte server2[] = {192,168,1,3};
+const char *domain1 = "iot.eclipse.org";
+const char *domain2 = "test.mosquitto.org";
+const uint8_t server1[] = {192,168,1,2};
+const uint8_t server2[] = {192,168,1,3};
 
 void callback(char* topic, byte* payload, unsigned int length);
 
 /**
  * if want to use IP address,
- * byte server[] = { XXX,XXX,XXX,XXX };
+ * const uint8_t[] = { XXX,XXX,XXX,XXX };
  * MQTT client(server, 1883, callback);
  * want to use domain name,
  * MQTT client("www.sample.com", 1883, callback);
