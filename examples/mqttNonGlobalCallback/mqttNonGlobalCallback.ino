@@ -1,6 +1,13 @@
 #include "MQTT.h"
 #include "ISubCallback.h"
 
+/*
+    This methodology allows the mqtt driver to exist in non-global space (such as belonging to another wrapper class).
+    Other features here allow default constructor, with post constructed Initialization (but only a single time).
+    Also, the callback feature is backwards compatible with a global function callback OR the option of registering
+    other objects (by means of the ISubCallback interface) to a list of callback listeners.
+*/
+
 class Foo : ISubCallback{
 public:
     Foo() {
