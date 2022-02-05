@@ -67,6 +67,7 @@ bug fixed and features pull requests
 #include "spark_wiring_string.h"
 #include "spark_wiring_tcpclient.h"
 #include "spark_wiring_usbserial.h"
+#include <vector>
 
 // MQTT_MAX_PACKET_SIZE : Maximum packet size
 // this size is total of [MQTT Header(Max:5byte) + Topic Name Length + Topic Name + Message ID(QoS1|2) + Payload]
@@ -100,6 +101,9 @@ bug fixed and features pull requests
 #else /* !DEBUG_MQTT_SERIAL_OUTPUT */
   #define debug_print(fmt, ...) ((void)0)
 #endif /* DEBUG_MQTT_SERIAL_OUTPUT */
+
+// Forward declaration
+class ISubCallback;
 
 
 class MQTT {
@@ -145,11 +149,15 @@ private:
     uint16_t maxpacketsize;
     os_mutex_t mutex_lock;
     bool thread = false;
+    bool initialized = false;
 
     void initialize(const char* domain, const uint8_t *ip, uint16_t port, int keepalive, int maxpacketsize, 
                 void (*callback)(char*,uint8_t*,unsigned int), bool thread = false);
     bool publishRelease(uint16_t messageid);
     bool publishComplete(uint16_t messageid);
+
+    void doCallbacks(char*, uint8_t*, unsigned int);
+    std::vector<ISubCallback*> callbackListeners;
 
     class MutexLocker {
         MQTT * mqtt;
@@ -190,6 +198,11 @@ public:
     MQTT(const uint8_t *ip, uint16_t port, int maxpacketsize, int keepalive, void (*callback)(char*,uint8_t*,unsigned int), bool thread = false);
 
     ~MQTT();
+
+    void Initialize(const char* domain, const uint8_t *ip, uint16_t port, int keepalive, int maxpacketsize, 
+        void (*callback)(char*,uint8_t*,unsigned int), bool thread = false);
+
+    void RegisterCallbackListener(ISubCallback *listener);
 
     void setBroker(const char* domain, uint16_t port);
     void setBroker(const uint8_t *ip, uint16_t port);

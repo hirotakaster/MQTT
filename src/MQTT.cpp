@@ -1,4 +1,5 @@
 #include "MQTT.h"
+#include "ISubCallback.h"
 
 #define LOGGING
 
@@ -48,6 +49,16 @@ MQTT::~MQTT() {
       delete[] buffer;
 }
 
+void MQTT::Initialize(const char* domain, const uint8_t *ip, uint16_t port, int keepalive, int maxpacketsize, 
+    void (*callback)(char*,uint8_t*,unsigned int), bool thread)
+{
+    if (this->initialized)
+    {
+        return;
+    }
+    this->initialize(domain, ip, port, keepalive, maxpacketsize, callback, thread);
+}
+
 void MQTT::initialize(const char* domain, const uint8_t *ip, uint16_t port, int keepalive, int maxpacketsize, 
                     void (*callback)(char*,uint8_t*,unsigned int), bool thread) {
     if (thread) {
@@ -68,6 +79,7 @@ void MQTT::initialize(const char* domain, const uint8_t *ip, uint16_t port, int 
     if (buffer != NULL)
       delete[] buffer;
     buffer = new uint8_t[this->maxpacketsize];
+    this->initialized = true;
 }
 
 void MQTT::setBroker(const char* domain, uint16_t port) {
@@ -267,42 +279,34 @@ bool MQTT::loop() {
             uint8_t *payload;
             if (len > 0) {
                 lastInActivity = t;
-                uint8_t type = buffer[0]&0xF0;
+                uint8_t type = buffer[0] & 0xF0;
                 if (type == MQTTPUBLISH) {
-                    if (callback) {
-                        uint16_t tl = (buffer[llen+1]<<8)+buffer[llen+2]; // topic length
-                        char topic[tl+1];
-                        for (uint16_t i=0;i<tl;i++) {
-                            topic[i] = buffer[llen+3+i];
+                    if (true) {
+                        uint16_t tl = (buffer[llen + 1] << 8) + buffer[llen + 2]; // topic length
+                        char topic[tl + 1];
+                        for (uint16_t i = 0; i < tl; i++) {
+                            topic[i] = buffer[llen + 3 + i];
                         }
                         topic[tl] = 0;
                         // msgId only present for QOS>0
-                        if ((buffer[0]&0x06) == MQTTQOS1_HEADER_MASK) { // QoS=1
-                            msgId = (buffer[llen+3+tl]<<8)+buffer[llen+3+tl+1];
-                            payload = buffer+llen+3+tl+2;
-                            callback(topic,payload,len-llen-3-tl-2);
+                        uint16_t payloadLength;
+                        if ((buffer[0] & 0x06) == MQTTQOS1_HEADER_MASK || (buffer[0] & 0x06) == MQTTQOS2_HEADER_MASK)
+                        {
+                            msgId = (buffer[llen + 3 + tl] << 8) + buffer[llen + 3 + tl + 1];
+                            payload = buffer + llen + 3 + tl + 2;
+                            payloadLength = len - llen - 3 - tl - 2;
 
-                            buffer[0] = MQTTPUBACK; // respond with PUBACK
+                            buffer[0] = (buffer[0] & 0x06) == MQTTQOS1_HEADER_MASK ? MQTTPUBACK : MQTTPUBREC;
                             buffer[1] = 2;
                             buffer[2] = (msgId >> 8);
                             buffer[3] = (msgId & 0xFF);
-                            _client.write(buffer,4);
+                            _client.write(buffer, 4);
                             lastOutActivity = t;
-                                    } else if ((buffer[0] & 0x06) == MQTTQOS2_HEADER_MASK) { // QoS=2
-                                        msgId = (buffer[llen + 3 + tl] << 8) + buffer[llen + 3 + tl + 1];
-                                        payload = buffer + llen + 3 + tl + 2;
-                                        callback(topic, payload, len - llen - 3 - tl - 2);
-
-                                        buffer[0] = MQTTPUBREC; // respond with PUBREC
-                                        buffer[1] = 2;
-                                        buffer[2] = (msgId >> 8);
-                                        buffer[3] = (msgId & 0xFF);
-                                        _client.write(buffer, 4);
-                                        lastOutActivity = t;
-                                    } else {
-                            payload = buffer+llen+3+tl;
-                            callback(topic,payload,len-llen-3-tl);
+                        } else {
+                            payload = buffer + llen + 3 + tl;
+                            payloadLength = len - llen - 3 - tl;
                         }
+                        doCallbacks(topic, payload, payloadLength);
                     }
                 } else if (type == MQTTPUBREC) {
                     // check for the situation that QoS2 receive PUBREC, should return PUBREL
@@ -547,4 +551,21 @@ bool MQTT::isConnected() {
 void MQTT::clear() {
   _client.stop();
   lastInActivity = lastOutActivity = millis();
+}
+
+void MQTT::RegisterCallbackListener(ISubCallback *listener)
+{
+    this->callbackListeners.push_back(listener);
+}
+
+void MQTT::doCallbacks(char* topic, uint8_t* buffer, unsigned int bufferLength)
+{
+    if (NULL != callback)
+    {
+        callback(topic, buffer, bufferLength);
+    }
+    for (ISubCallback *listener : callbackListeners)
+    {
+        listener->Callback(topic, buffer, bufferLength);
+    }
 }
